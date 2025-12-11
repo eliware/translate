@@ -11,8 +11,16 @@
     "type": "git",
     "url": "git+https://github.com/eliware/translate.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "translate",
+    "translation",
+    "discord",
+    "locales",
+    "localization",
+    "eliware",
+    "nodejs"
+  ],
+  "author": "Eli Sterling <eli@eliware.org>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/eliware/translate/issues"
