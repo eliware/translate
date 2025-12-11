@@ -1,43 +1,43 @@
 {
-  "name": "@eliware/translate",
-  "version": "1.1.0",
-  "type": "module",
-  "description": "A tool for translating locale files for discord apps built on @eliware/discord",
-  "main": "translate.mjs",
-  "scripts": {
-    "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eliware/translate.git"
-  },
-  "keywords": [
-    "translate",
-    "translation",
-    "discord",
-    "locales",
-    "localization",
-    "eliware",
-    "nodejs"
-  ],
-  "author": "Eli Sterling <eli@eliware.org>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/eliware/translate/issues"
-  },
-  "homepage": "https://github.com/eliware/translate#readme",
-  "dependencies": {
-    "dotenv": "^16.5.0",
-    "openai": "^5.1.0"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/?(*.)+(spec|test).[jt]s?(x)",
-      "**/?(*.)+(spec|test).mjs"
-    ]
-  }
+    "name": "@eliware/translate",
+    "version": "1.1.1",
+    "type": "module",
+    "description": "A tool for translating locale files for discord apps built on @eliware/discord",
+    "main": "translate.mjs",
+    "scripts": {
+        "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/eliware/translate.git"
+    },
+    "keywords": [
+        "translate",
+        "translation",
+        "discord",
+        "locales",
+        "localization",
+        "eliware",
+        "nodejs"
+    ],
+    "author": "Eli Sterling <eli@eliware.org>",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/eliware/translate/issues"
+    },
+    "homepage": "https://github.com/eliware/translate#readme",
+    "dependencies": {
+        "dotenv": "^16.5.0",
+        "openai": "^5.1.0"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "testMatch": [
+            "**/?(*.)+(spec|test).[jt]s?(x)",
+            "**/?(*.)+(spec|test).mjs"
+        ]
+    }
 }
