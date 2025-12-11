@@ -1,0 +1,17 @@
+{
+    "model": "gpt-5-mini",
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "en-US.json content:\n{json}\n\nTranslate this to locale: {target_locale}.\nKeep any {placeholders} intact.\nSend back the translated JSON with unescaped unicode."
+                }
+            ]
+        }
+    ],
+    "response_format": {
+        "type": "json_object"
+    }
+}
