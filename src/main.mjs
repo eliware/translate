@@ -4,7 +4,6 @@ import fs from 'node:fs/promises';
 import { config as dotenvConfig } from 'dotenv';
 import { translateLocale } from './worker.mjs';
 import { createProgressBar } from './progress.mjs';
-import pLimit from './p-limit.mjs';
 import { getCurrentFilename, getCurrentDirname } from './esm-filename.mjs';
 
 export async function runTranslate({
@@ -14,7 +13,6 @@ export async function runTranslate({
     dotenvConfigDep = dotenvConfig,
     translateLocaleDep = translateLocale,
     createProgressBarDep = createProgressBar,
-    pLimitDep = pLimit,
     __filenameDep,
     __dirnameDep,
     importMeta = import.meta,
@@ -98,9 +96,10 @@ export async function runTranslate({
         return 1;
     }
     const progress = createProgressBarDep(locales.length, processDep.stdout);
-    const limit = pLimitDep(4);
+
+    // Process all locales in parallel with no concurrency limit (fire-and-wait)
     await Promise.all(locales.map(locale =>
-        limit(async () => {
+        (async () => {
             if (locale === 'en-US') {
                 try {
                     await fsDep.writeFile(pathDep.join(cwd, 'en-US.json'), enUSRaw);
@@ -134,7 +133,7 @@ export async function runTranslate({
                 processDep.stderr && processDep.stderr.write && processDep.stderr.write(`Failed to translate ${locale}\n`);
                 progress.update(locale);
             }
-        })
+        })()
     ));
     return 0;
 }
