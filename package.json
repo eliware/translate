@@ -1,6 +1,6 @@
 {
     "name": "@eliware/translate",
-    "version": "1.1.2",
+    "version": "1.1.4",
     "type": "module",
     "description": "A tool for translating locale files for discord apps built on @eliware/discord",
     "main": "translate.mjs",
@@ -27,11 +27,11 @@
     },
     "homepage": "https://github.com/eliware/translate#readme",
     "dependencies": {
-        "dotenv": "^16.5.0",
-        "openai": "^5.1.0"
+        "dotenv": "^17.4.2",
+        "openai": "^6.45.0"
     },
     "devDependencies": {
-        "jest": "^29.7.0"
+        "jest": "^30.4.2"
     },
     "jest": {
         "testEnvironment": "node",

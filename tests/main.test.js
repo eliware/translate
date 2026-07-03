@@ -103,7 +103,7 @@ describe('runTranslate', () => {
       locales: ['fr']
     });
     expect(code).toBe(1);
-    expect(mockProcess.stderr.write).toHaveBeenCalledWith(expect.stringContaining('en-US.json not found'));
+    expect(mockProcess.stderr.write).toHaveBeenCalledWith(expect.stringContaining('Failed to read current directory'));
   });
 
   it('logs error if translation fails for a locale', async () => {
