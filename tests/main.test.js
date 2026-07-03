@@ -5,7 +5,8 @@ describe('runTranslate', () => {
   const mockFs = {
     access: jest.fn(),
     readFile: jest.fn(),
-    writeFile: jest.fn()
+    writeFile: jest.fn(),
+    readdir: jest.fn()
   };
   const mockPath = {
     join: jest.fn((...args) => args.join('/')),
@@ -24,16 +25,51 @@ describe('runTranslate', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFs.access.mockResolvedValue();
+    mockFs.access.mockImplementation((file) => {
+      if (String(file).includes('.env')) return Promise.resolve();
+      return Promise.resolve();
+    });
+    mockFs.readdir.mockResolvedValue(['notes.txt']);
     mockFs.readFile.mockImplementation((file) => {
-      if (file.endsWith('en-US.json')) return Promise.resolve('{"en": "text"}');
-      if (file.endsWith('prompt.json')) return Promise.resolve('{"messages":[{"content":[{"text":""}]},{"content":[{"text":"Translate this to locale: {target_locale}."}]}]}');
+      if (file.endsWith('prompt-commands.json')) return Promise.resolve('{"messages":[{"content":[{"text":""}]}]}');
       return Promise.resolve('');
     });
     mockFs.writeFile.mockResolvedValue();
   });
 
+  it('loads .env from the repository root regardless of cwd', async () => {
+    mockFs.readdir.mockResolvedValueOnce(['en-US.json']);
+    mockFs.readFile.mockImplementation((file) => {
+      if (file.endsWith('en-US.json')) return Promise.resolve('{"en": "text"}');
+      if (file.endsWith('prompt.json')) return Promise.resolve('{"messages":[{"content":[{"text":""}]},{"content":[{"text":"Translate this to locale: {target_locale}."}]}]}');
+      return Promise.resolve('');
+    });
+
+    await runTranslate({
+      fsDep: mockFs,
+      pathDep: mockPath,
+      processDep: mockProcess,
+      dotenvConfigDep: mockDotenv,
+      translateLocaleDep: mockTranslateLocale,
+      createProgressBarDep: mockCreateProgressBar,
+      pLimitDep: mockPLimit,
+      __filenameDep: '/opt/translate/src/main.mjs',
+      __dirnameDep: '/opt/translate/src',
+      locales: ['fr']
+    });
+
+    expect(mockFs.access).toHaveBeenCalledWith('/opt/translate/src/../.env');
+    expect(mockDotenv).toHaveBeenCalledWith({ path: '/opt/translate/src/../.env' });
+  });
+
   it('runs successfully and writes all locale files', async () => {
+    mockFs.readdir.mockResolvedValueOnce(['en-US.json']);
+    mockFs.readFile.mockImplementation((file) => {
+      if (file.endsWith('en-US.json')) return Promise.resolve('{"en": "text"}');
+      if (file.endsWith('prompt.json')) return Promise.resolve('{"messages":[{"content":[{"text":""}]},{"content":[{"text":"Translate this to locale: {target_locale}."}]}]}');
+      return Promise.resolve('');
+    });
+
     const code = await runTranslate({
       fsDep: mockFs,
       pathDep: mockPath,
@@ -88,8 +124,14 @@ describe('runTranslate', () => {
     expect(proc.stderr.write).toHaveBeenCalledWith(expect.stringContaining('Missing OPENAI_API_KEY'));
   });
 
-  it('returns 1 if en-US.json is missing', async () => {
-    mockFs.access.mockResolvedValueOnce().mockRejectedValueOnce(new Error('no en-US'));
+  it('returns 1 if prompt.json cannot be parsed in locale mode', async () => {
+    mockFs.readdir.mockResolvedValueOnce(['en-US.json']);
+    mockFs.readFile.mockImplementation((file) => {
+      if (file.endsWith('en-US.json')) return Promise.resolve('{"en": "text"}');
+      if (file.endsWith('prompt.json')) return Promise.resolve('not json');
+      return Promise.resolve('');
+    });
+
     const code = await runTranslate({
       fsDep: mockFs,
       pathDep: mockPath,
@@ -103,11 +145,17 @@ describe('runTranslate', () => {
       locales: ['fr']
     });
     expect(code).toBe(1);
-    expect(mockProcess.stderr.write).toHaveBeenCalledWith(expect.stringContaining('Failed to read current directory'));
+    expect(mockProcess.stderr.write).toHaveBeenCalledWith(expect.stringContaining('Failed to parse prompt.json'));
   });
 
   it('logs error if translation fails for a locale', async () => {
+    mockFs.readdir.mockResolvedValueOnce(['en-US.json']);
     mockTranslateLocale.mockImplementationOnce(() => { throw new Error('fail'); });
+    mockFs.readFile.mockImplementation((file) => {
+      if (file.endsWith('en-US.json')) return Promise.resolve('{"en": "text"}');
+      if (file.endsWith('prompt.json')) return Promise.resolve('{"messages":[{"content":[{"text":""}]},{"content":[{"text":"Translate this to locale: {target_locale}."}]}]}');
+      return Promise.resolve('');
+    });
     await runTranslate({
       fsDep: mockFs,
       pathDep: mockPath,

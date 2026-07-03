@@ -50,7 +50,6 @@ export async function runTranslate({
     }
 
     if (inLocalesMode) {
-        // Locales codepath (existing behavior)
         const promptPath = pathDep.join(__dirname, '..', 'prompt.json');
         let enUSRaw, promptJsonRaw, promptObj;
         try {
@@ -71,7 +70,6 @@ export async function runTranslate({
             processDep.stderr && processDep.stderr.write && processDep.stderr.write('Failed to parse prompt.json\n');
             return 1;
         }
-        // Replace {json} placeholder in any text content with the raw en-US.json contents.
         if (promptObj && Array.isArray(promptObj.messages)) {
             let replaced = false;
             for (const msg of promptObj.messages) {
@@ -84,7 +82,6 @@ export async function runTranslate({
                     }
                 }
             }
-            // Fallback to legacy behavior: if no {json} placeholder found, inject en-US content into first message text slot.
             if (!replaced) {
                 if (
                     promptObj.messages[0] &&
@@ -103,8 +100,6 @@ export async function runTranslate({
             return 1;
         }
         const progress = createProgressBarDep(locales.length, processDep.stdout);
-
-        // Process all locales in parallel with no concurrency limit (fire-and-wait)
         await Promise.all(locales.map(locale =>
             (async () => {
                 if (locale === 'en-US') {
@@ -116,7 +111,6 @@ export async function runTranslate({
                     return;
                 }
                 try {
-                    // Deep copy prompt for this locale and replace {target_locale} placeholders (if any)
                     const localePromptObj = JSON.parse(JSON.stringify(promptObj));
                     if (Array.isArray(localePromptObj.messages)) {
                         for (const m of localePromptObj.messages) {
@@ -145,8 +139,6 @@ export async function runTranslate({
         return 0;
     }
 
-    // Commands codepath: assume current cwd contains Discord command JSON files to localize
-    // Find .json files in cwd
     let files;
     try {
         const dirents = await fsDep.readdir(cwd);
@@ -160,7 +152,6 @@ export async function runTranslate({
         return 1;
     }
 
-    // Basic validation: ensure files look like command manifests (have name and type)
     const commandFiles = [];
     for (const f of files) {
         const p = pathDep.join(cwd, f);
@@ -171,7 +162,6 @@ export async function runTranslate({
                 commandFiles.push({ file: f, raw, parsed });
             }
         } catch (e) {
-            // skip non-JSON or unreadable files
         }
     }
     if (commandFiles.length === 0) {
@@ -179,7 +169,6 @@ export async function runTranslate({
         return 1;
     }
 
-    // Load prompt-commands.json
     const promptCmdPath = pathDep.join(__dirname, '..', 'prompt-commands.json');
     let promptCmdRaw, promptCmdObj;
     try {
@@ -190,12 +179,9 @@ export async function runTranslate({
         return 1;
     }
 
-    // Process each command file in parallel
     await Promise.all(commandFiles.map(({ file, raw, parsed }) => (async () => {
         try {
-            // create a fresh prompt object for this command
             const cmdPromptObj = JSON.parse(JSON.stringify(promptCmdObj));
-            // Attempt to insert the raw command JSON into the first text slot; if a {json} placeholder exists replace it
             let inserted = false;
             if (Array.isArray(cmdPromptObj.messages)) {
                 for (const msg of cmdPromptObj.messages) {
@@ -213,7 +199,6 @@ export async function runTranslate({
                     }
                 }
                 if (!inserted) {
-                    // append the command JSON to the first message text block
                     if (cmdPromptObj.messages[0] && Array.isArray(cmdPromptObj.messages[0].content) && cmdPromptObj.messages[0].content[0] && typeof cmdPromptObj.messages[0].content[0].text === 'string') {
                         cmdPromptObj.messages[0].content[0].text += '\n\n' + raw;
                         inserted = true;
@@ -225,20 +210,17 @@ export async function runTranslate({
                 return;
             }
 
-            // Call translate worker (re-using translateLocale) — prompt-commands expects to return the full translated command JSON
             const result = await translateLocaleDep({
                 locale: '',
                 promptObj: cmdPromptObj,
                 apiKey
             });
 
-            // Try to parse returned content as JSON and write back to the same file
             let out;
             try {
                 out = JSON.parse(result);
                 await fsDep.writeFile(pathDep.join(cwd, file), JSON.stringify(out, null, 2), 'utf8');
             } catch (e) {
-                // if parse fails, write raw string
                 await fsDep.writeFile(pathDep.join(cwd, file), result, 'utf8');
             }
         } catch (err) {
