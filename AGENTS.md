@@ -48,3 +48,7 @@ Modes:
 - Do not run destructive file operations unless requested.
 - Do not change generated outputs unless the task is about output behavior.
 - Do not broaden scope without a clear reason.
+- Do not over-engineer simple tasks.
+- Do not guess when confused.
+- Do not make random, pointless changes.
+- Check your own work before saying you're done.
