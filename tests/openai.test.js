@@ -28,4 +28,11 @@ describe('callOpenAI', () => {
     expect(mockCreate).toHaveBeenCalled();
     expect(result).toBe('translated');
   });
+
+  it('supports prompts without a translatable second message', async () => {
+    const create = jest.fn().mockResolvedValue({ choices: [{ message: { content: 'ok' } }] });
+    const OpenAI = jest.fn().mockImplementation(() => ({ chat: { completions: { create } } }));
+    await callOpenAI({ promptObj: { messages: [] }, targetLocale: 'fr', apiKey: 'key', OpenAIDep: OpenAI });
+    expect(create).toHaveBeenCalled();
+  });
 });

@@ -19,25 +19,26 @@ It supports two workflows:
 
 ## Requirements
 
-- Node.js 18+ recommended
+- Node.js 26 or newer
 - An OpenAI API key
 - A `.env` file next to the repository root
 
 ## Installation
 
 ```sh
-cd /opt
+cd /path/to
 # Clone the repository
- git clone https://github.com/eliware/translate.git
+git clone https://github.com/eliware/translate.git
 cd translate
 npm install
-# Optional: run tests
-npm test
 # Copy and edit the .env file
 cp .env.example .env
+# Run the required validation
+npm test
+npm run lint
 # Optional: symlink for global CLI usage
 # Requires sudo/root
-ln -s /opt/translate/translate.mjs /usr/bin/translate
+ln -s /path/to/translate/translate.mjs /usr/local/bin/translate
 ```
 
 ## Setup

@@ -10,4 +10,11 @@ describe('createProgressBar', () => {
     bar.update('de');
     expect(output.write).toHaveBeenCalledWith('\nAll translations complete.\n');
   });
+
+  it('uses process stdout when output is omitted', () => {
+    const write = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+    createProgressBar(1).update('fr');
+    expect(write).toHaveBeenCalled();
+    write.mockRestore();
+  });
 });

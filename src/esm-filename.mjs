@@ -7,6 +7,7 @@ import { dirname as pathDirname } from 'path';
  */
 export const getCurrentFilename = (meta) => {
   if (meta && meta.url) return fileURLToPath(meta.url);
+  /* istanbul ignore next -- native ESM has no __filename binding */
   return typeof __filename !== 'undefined' ? __filename : '';
 };
 

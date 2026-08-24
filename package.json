@@ -4,6 +4,15 @@
   "type": "module",
   "description": "A tool for translating locale files for discord apps built on @eliware/discord",
   "main": "translate.mjs",
+  "files": [
+    "src",
+    "prompt.json",
+    "prompt-commands.json",
+    "translate.mjs",
+    "README.md",
+    "RELEASE_NOTES.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "eliware-test",
     "lint": "eliware-test --lint"

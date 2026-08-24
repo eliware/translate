@@ -8,4 +8,9 @@ describe('loadPrompt', () => {
     expect(result).toBe('foo fr bar');
     expect(mockFs.readFile).toHaveBeenCalledWith('prompt.json', 'utf8');
   });
+
+  it('leaves prompts without a placeholder unchanged', async () => {
+    const fs = { readFile: jest.fn().mockResolvedValue('plain') };
+    await expect(loadPrompt('prompt.json', 'fr', fs)).resolves.toBe('plain');
+  });
 });

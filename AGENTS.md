@@ -31,7 +31,7 @@ Modes:
 
 ## Runtime assumptions
 
-- .env must exist one level above the repo root.
+- `.env` must exist at the repository root (alongside `package.json`).
 - OPENAI_API_KEY must be set there.
 - Locale mode uses en-US.json in the current working directory.
 - Command mode scans the current working directory for .json command manifests.
