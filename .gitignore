@@ -139,7 +139,6 @@ dist
 example/*.json
 
 # test results
-.jest.result
 
 # AgentX
 .agentx_responseid
