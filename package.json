@@ -1,53 +1,53 @@
 {
-  "name": "@eliware/translate",
-  "version": "1.1.5",
-  "type": "module",
-  "description": "A tool for translating locale files for discord apps built on @eliware/discord",
-  "main": "translate.mjs",
-  "files": [
-    "src",
-    "prompt.json",
-    "prompt-commands.json",
-    "translate.mjs",
-    "README.md",
-    "RELEASE_NOTES.md",
-    "LICENSE"
-  ],
-  "scripts": {
-    "test": "eliware-test",
-    "lint": "eliware-test --lint"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eliware/translate.git"
-  },
-  "keywords": [
-    "translate",
-    "translation",
-    "discord",
-    "locales",
-    "localization",
-    "eliware",
-    "nodejs"
-  ],
-  "author": "Eli Sterling <eli@eliware.org>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/eliware/translate/issues"
-  },
-  "homepage": "https://github.com/eliware/translate#readme",
-  "dependencies": {
-    "dotenv": "^17.4.2",
-    "openai": "^6.45.0"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/?(*.)+(spec|test).[jt]s?(x)",
-      "**/?(*.)+(spec|test).mjs"
-    ]
-  },
-  "devDependencies": {
-    "@eliware/test": "^1.0.3"
-  }
+    "name": "@eliware/translate",
+    "version": "1.1.6",
+    "type": "module",
+    "description": "A tool for translating locale files for discord apps built on @eliware/discord",
+    "main": "translate.mjs",
+    "files": [
+        "src",
+        "prompt.json",
+        "prompt-commands.json",
+        "translate.mjs",
+        "README.md",
+        "RELEASE_NOTES.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "test": "eliware-test",
+        "lint": "eliware-test --lint"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/eliware/translate.git"
+    },
+    "keywords": [
+        "translate",
+        "translation",
+        "discord",
+        "locales",
+        "localization",
+        "eliware",
+        "nodejs"
+    ],
+    "author": "Eli Sterling <eli@eliware.org>",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/eliware/translate/issues"
+    },
+    "homepage": "https://github.com/eliware/translate#readme",
+    "dependencies": {
+        "dotenv": "^17.4.2",
+        "openai": "^7.5.0"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "testMatch": [
+            "**/?(*.)+(spec|test).[jt]s?(x)",
+            "**/?(*.)+(spec|test).mjs"
+        ]
+    },
+    "devDependencies": {
+        "@eliware/test": "^1.0.3"
+    }
 }
