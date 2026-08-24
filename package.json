@@ -5,7 +5,8 @@
   "description": "A tool for translating locale files for discord apps built on @eliware/discord",
   "main": "translate.mjs",
   "scripts": {
-    "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
+    "test": "eliware-test",
+    "lint": "eliware-test --lint"
   },
   "repository": {
     "type": "git",
@@ -30,15 +31,14 @@
     "dotenv": "^17.4.2",
     "openai": "^6.45.0"
   },
-  "devDependencies": {
-    "jest": "^30.4.2",
-    "oxlint": "^1.73.0"
-  },
   "jest": {
     "testEnvironment": "node",
     "testMatch": [
       "**/?(*.)+(spec|test).[jt]s?(x)",
       "**/?(*.)+(spec|test).mjs"
     ]
+  },
+  "devDependencies": {
+    "@eliware/test": "^1.0.3"
   }
 }
