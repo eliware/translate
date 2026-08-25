@@ -48,6 +48,6 @@
         ]
     },
     "devDependencies": {
-        "@eliware/test": "^1.0.3"
+        "@eliware/test": "^2.0.0"
     }
 }
