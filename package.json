@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "@eliware/common": "^12.0.1",
-    "dotenv": "^18.0.7",
-    "openai": "^7.32.0"
+    "@eliware/openai": "^12.0.0",
+    "dotenv": "^18.0.7"
   },
   "devDependencies": {
     "@eliware/test": "^12.0.0"
