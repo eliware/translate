@@ -118,6 +118,16 @@ describe("runLocaleMode", () => {
     expect(state.errors).toContain("Invalid locale JSON response for fr\n");
   });
 
+  it("updates progress when a locale file cannot be written", async () => {
+    const state = setup();
+    state.deps.fsDep.writeFile = async () => {
+      throw Error("write failed");
+    };
+    await expect(runLocaleMode(state.deps)).resolves.toBe(1);
+    expect(state.errors).toContain("Failed to translate fr\n");
+    expect(state.updates).toContain("fr");
+  });
+
   it("limits concurrent locale translations to five", async () => {
     const state = setup();
     state.deps.locales = ["a", "b", "c", "d", "e", "f", "g"];

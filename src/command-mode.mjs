@@ -50,7 +50,7 @@ export async function runCommandMode({
           output = formatCommandResponse(result, JSON.parse(raw));
         } catch {
           failed = true;
-          writeError(`Invalid JSON response for command file ${name}\n`);
+          writeError(`Invalid command response for command file ${name}\n`);
           return;
         }
         await fsDep.writeFile(pathDep.join(cwd, name), output, "utf8");

@@ -43,7 +43,7 @@ describe("runCommandMode", () => {
     state.files.set("prompt-commands.json", '{"messages":[{"content":[{"text":"Rules"}]}]}');
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toEqual([]);
-    expect(state.errors).toContain("Invalid JSON response for command file one.json\n");
+    expect(state.errors).toContain("Invalid command response for command file one.json\n");
   });
 
   it("reports directory, empty input, and manifest errors", async () => {
@@ -109,5 +109,17 @@ describe("runCommandMode", () => {
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toHaveLength(1);
     expect(state.errors).toContain("Could not read or parse JSON file bad.json\n");
+  });
+
+  it("does not write a command response with an overlong localized name", async () => {
+    const response = JSON.stringify({
+      name: "one",
+      type: 1,
+      name_localizations: { fr: "n".repeat(33) },
+    });
+    const state = setup({ response });
+    await expect(runCommandMode(state.deps)).resolves.toBe(1);
+    expect(state.writes).toEqual([]);
+    expect(state.errors).toContain("Invalid command response for command file one.json\n");
   });
 });

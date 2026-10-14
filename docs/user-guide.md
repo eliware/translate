@@ -58,6 +58,7 @@ The CLI scans only JSON files in the target root. It skips files that do not mat
 The CLI reads the bundled `prompt-commands.json` file.
 
 The CLI sends each detected manifest to OpenAI. It keeps the source fields and option structure. It updates command names, descriptions, and their localization maps. It formats valid JSON output with two spaces. It does not write invalid JSON responses. Inspect each file before you use or share it.
+Command names and localized names must contain 1 to 32 characters. Description fields must contain 1 to 100 characters.
 
 ## Commands and exit codes
 

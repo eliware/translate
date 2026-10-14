@@ -2,6 +2,37 @@ function isRecord(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function hasTextLength(value, maximum) {
+  return typeof value === "string" && value.length > 0 && value.length <= maximum;
+}
+
+function hasLocalizationLengths(value, maximum) {
+  return (
+    value === undefined ||
+    (isRecord(value) && Object.values(value).every((text) => hasTextLength(text, maximum)))
+  );
+}
+
+function hasValidCommandLengths(command, isOption = false) {
+  if (!isRecord(command) || !hasTextLength(command.name, 32)) return false;
+  if (!hasLocalizationLengths(command.name_localizations, 32)) return false;
+  if (Object.hasOwn(command, "description") && !hasTextLength(command.description, 100))
+    return false;
+  if (!hasLocalizationLengths(command.description_localizations, 100)) return false;
+  if (
+    !isOption &&
+    command.type > 1 &&
+    (Object.hasOwn(command, "description") || Object.hasOwn(command, "description_localizations"))
+  ) {
+    return false;
+  }
+  return (
+    command.options === undefined ||
+    (Array.isArray(command.options) &&
+      command.options.every((option) => hasValidCommandLengths(option, true)))
+  );
+}
+
 function mergeLocalizations(source, translated) {
   const localizations = isRecord(source) ? source : {};
   const updates = Object.fromEntries(
@@ -40,5 +71,9 @@ export function formatCommandResponse(result, source) {
   const translated = JSON.parse(result);
   if (!isRecord(translated) || !isRecord(source))
     throw new TypeError("Command response must be an object");
-  return JSON.stringify(mergeCommand(source, translated), null, 2);
+  const output = mergeCommand(source, translated);
+  if (!hasValidCommandLengths(output)) {
+    throw new TypeError("Command response violates name or description length limits");
+  }
+  return JSON.stringify(output, null, 2);
 }

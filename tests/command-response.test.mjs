@@ -46,8 +46,11 @@ describe("formatCommandResponse", () => {
   });
 
   it("keeps absent fields and options from the source", () => {
-    const source = { type: 1, options: [null] };
-    expect(JSON.parse(formatCommandResponse('{"name":"ignored"}', source))).toEqual(source);
+    const source = { name: "hello", type: 1, options: [{ name: "user", type: 3 }] };
+    expect(JSON.parse(formatCommandResponse('{"name":"hello"}', source))).toEqual(source);
+    expect(() =>
+      formatCommandResponse('{"name":"hello"}', { name: "hello", type: 1, options: [null] }),
+    ).toThrow();
   });
 
   it("does not add description localizations to non-chat commands", () => {
@@ -57,5 +60,31 @@ describe("formatCommandResponse", () => {
       source,
     );
     expect(JSON.parse(result)).toEqual(source);
+  });
+
+  it("rejects invalid description fields on non-chat commands", () => {
+    const response = '{"name":"hello"}';
+    expect(() =>
+      formatCommandResponse(response, {
+        name: "hello",
+        type: 2,
+        description_localizations: "invalid",
+      }),
+    ).toThrow("Command response violates name or description length limits");
+    expect(() =>
+      formatCommandResponse(response, { name: "hello", type: 2, description: "invalid" }),
+    ).toThrow("Command response violates name or description length limits");
+  });
+
+  it("rejects names and descriptions that exceed Discord limits", () => {
+    const source = { name: "hello", description: "Greeting", type: 1 };
+    const longName = { name: "hello", name_localizations: { fr: "n".repeat(33) } };
+    const longDescription = { name: "hello", description: "d".repeat(101) };
+    expect(() => formatCommandResponse(JSON.stringify(longName), source)).toThrow(
+      "Command response violates name or description length limits",
+    );
+    expect(() => formatCommandResponse(JSON.stringify(longDescription), source)).toThrow(
+      "Command response violates name or description length limits",
+    );
   });
 });
