@@ -31,7 +31,7 @@ function hasValidCommandLengths(command, isOption = false) {
     command.type > 1 &&
     (Object.hasOwn(command, "description") ||
       Object.hasOwn(command, "description_localizations") ||
-      (Array.isArray(command.options) && command.options.length > 0))
+      Object.hasOwn(command, "options"))
   ) {
     return false;
   }

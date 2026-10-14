@@ -105,6 +105,9 @@ describe("formatCommandResponse", () => {
         options: [{ name: "user", type: 3 }],
       }),
     ).toThrow("Command response violates name or description length limits");
+    expect(() =>
+      formatCommandResponse('{"name":"hello"}', { name: "hello", type: 2, options: [] }),
+    ).toThrow("Command response violates name or description length limits");
   });
 
   it("keeps valid command groups with descriptions inside chat commands", () => {
