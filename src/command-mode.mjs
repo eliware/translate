@@ -11,9 +11,9 @@ export async function runCommandMode({
   translateLocaleDep,
   writeError,
 }) {
-  let names, files;
+  let names, files, invalidFiles;
   try {
-    ({ names, files } = await findCommandFiles({ fsDep, pathDep, cwd }));
+    ({ names, files, invalidFiles } = await findCommandFiles({ fsDep, pathDep, cwd }));
   } catch {
     writeError("Failed to read current directory\n");
     return 1;
@@ -22,6 +22,7 @@ export async function runCommandMode({
     writeError("No .json files found — nothing to do\n");
     return 1;
   }
+  for (const name of invalidFiles) writeError(`Could not read or parse JSON file ${name}\n`);
   if (files.length === 0) {
     writeError("No command JSON manifests detected in this directory\n");
     return 1;
@@ -33,7 +34,7 @@ export async function runCommandMode({
     writeError("Failed to read or parse prompt-commands.json\n");
     return 1;
   }
-  let failed = false;
+  let failed = invalidFiles.length > 0;
   await Promise.all(
     files.map(async ({ name, raw }) => {
       try {
@@ -44,7 +45,14 @@ export async function runCommandMode({
           return;
         }
         const result = await translateLocaleDep({ locale: "", promptObj: commandPrompt, apiKey });
-        const output = formatCommandResponse(result);
+        let output;
+        try {
+          output = formatCommandResponse(result);
+        } catch {
+          failed = true;
+          writeError(`Invalid JSON response for command file ${name}\n`);
+          return;
+        }
         await fsDep.writeFile(pathDep.join(cwd, name), output, "utf8");
       } catch {
         failed = true;

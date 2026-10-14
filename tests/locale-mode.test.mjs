@@ -26,7 +26,8 @@ function setup({
     moduleDir: "/package/src",
     apiKey: "key",
     locales: ["fr"],
-    translateLocaleDep: async ({ promptObj }) => promptObj.messages[0].content[0].text,
+    translateLocaleDep: async ({ promptObj }) =>
+      JSON.stringify({ text: promptObj.messages[0].content[0].text }),
     createProgressBarDep: () => ({ update: (locale) => updates.push(locale) }),
     writeError: (message) => errors.push(message),
   };
@@ -43,7 +44,7 @@ describe("runLocaleMode", () => {
     await expect(runLocaleMode(state.deps)).resolves.toBe(0);
     expect(state.writes).toEqual(
       expect.arrayContaining([
-        ["/target/fr.json", 'Translate {"en":"Hello"} to fr'],
+        ["/target/fr.json", JSON.stringify({ text: 'Translate {"en":"Hello"} to fr' })],
         ["/target/en-US.json", '{"en":"Hello"}'],
       ]),
     );
@@ -96,5 +97,29 @@ describe("runLocaleMode", () => {
     await expect(runLocaleMode(state.deps)).resolves.toBe(1);
     expect(state.errors).toContain("Failed to write en-US.json\n");
     expect(state.updates).toContain("en-US");
+  });
+
+  it("rejects non-JSON model responses without writing a locale file", async () => {
+    const state = setup();
+    state.deps.translateLocaleDep = async () => "plain output";
+    await expect(runLocaleMode(state.deps)).resolves.toBe(1);
+    expect(state.writes).toEqual([]);
+    expect(state.errors).toContain("Invalid JSON response for fr\n");
+  });
+
+  it("limits concurrent locale translations to five", async () => {
+    const state = setup();
+    state.deps.locales = ["a", "b", "c", "d", "e", "f", "g"];
+    let active = 0;
+    let maximum = 0;
+    state.deps.translateLocaleDep = async () => {
+      active += 1;
+      maximum = Math.max(maximum, active);
+      await Promise.resolve();
+      active -= 1;
+      return "{}";
+    };
+    await expect(runLocaleMode(state.deps)).resolves.toBe(0);
+    expect(maximum).toBe(5);
   });
 });

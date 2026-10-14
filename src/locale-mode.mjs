@@ -1,5 +1,8 @@
 import { injectLocaleJson } from "./prompts/locale-prompt.mjs";
 import { setTargetLocale } from "./prompts/target-locale.mjs";
+import pLimit from "./p-limit.mjs";
+
+const MAX_CONCURRENT_TRANSLATIONS = 5;
 
 export async function runLocaleMode({
   fsDep,
@@ -37,28 +40,39 @@ export async function runLocaleMode({
   }
   const progress = createProgressBarDep(locales.length, processDep.stdout);
   let failed = false;
+  const limit = pLimit(MAX_CONCURRENT_TRANSLATIONS);
   await Promise.all(
-    locales.map(async (locale) => {
-      if (locale === "en-US") {
+    locales.map((locale) =>
+      limit(async () => {
+        if (locale === "en-US") {
+          try {
+            await fsDep.writeFile(sourcePath, source);
+          } catch {
+            failed = true;
+            writeError("Failed to write en-US.json\n");
+          }
+          progress.update(locale);
+          return;
+        }
         try {
-          await fsDep.writeFile(sourcePath, source);
+          const localePrompt = setTargetLocale(JSON.parse(JSON.stringify(prompt)), locale);
+          const result = await translateLocaleDep({ locale, promptObj: localePrompt, apiKey });
+          try {
+            JSON.parse(result);
+          } catch {
+            failed = true;
+            writeError(`Invalid JSON response for ${locale}\n`);
+            progress.update(locale);
+            return;
+          }
+          await fsDep.writeFile(pathDep.join(cwd, `${locale}.json`), result);
         } catch {
           failed = true;
-          writeError("Failed to write en-US.json\n");
+          writeError(`Failed to translate ${locale}\n`);
         }
         progress.update(locale);
-        return;
-      }
-      try {
-        const localePrompt = setTargetLocale(JSON.parse(JSON.stringify(prompt)), locale);
-        const result = await translateLocaleDep({ locale, promptObj: localePrompt, apiKey });
-        await fsDep.writeFile(pathDep.join(cwd, `${locale}.json`), result);
-      } catch {
-        failed = true;
-        writeError(`Failed to translate ${locale}\n`);
-      }
-      progress.update(locale);
-    }),
+      }),
+    ),
   );
   return failed ? 1 : 0;
 }

@@ -1,6 +1,6 @@
 import { runCommandMode } from "../src/command-mode.mjs";
 
-function setup({ names = ["one.json", "bad.json", "note.txt"], response = '{"ok":true}' } = {}) {
+function setup({ names = ["one.json"], response = '{"ok":true}' } = {}) {
   const files = new Map([
     ["prompt-commands.json", '{"messages":[{"content":[{"type":"text","text":"{json}"}]}]}'],
     ["one.json", '{"name":"one","type":1}'],
@@ -36,11 +36,12 @@ describe("runCommandMode", () => {
     expect(state.errors).toEqual([]);
   });
 
-  it("keeps non-JSON output and appends JSON when the prompt has no marker", async () => {
+  it("does not write non-JSON output and reports the invalid response", async () => {
     const state = setup({ response: "plain output" });
     state.files.set("prompt-commands.json", '{"messages":[{"content":[{"text":"Rules"}]}]}');
-    await runCommandMode(state.deps);
-    expect(state.writes[0][1]).toBe("plain output");
+    await expect(runCommandMode(state.deps)).resolves.toBe(1);
+    expect(state.writes).toEqual([]);
+    expect(state.errors).toContain("Invalid JSON response for command file one.json\n");
   });
 
   it("reports directory, empty input, and manifest errors", async () => {
@@ -94,5 +95,12 @@ describe("runCommandMode", () => {
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toHaveLength(1);
     expect(state.writes[0][0]).toBe("/target/two.json");
+  });
+
+  it("reports malformed manifests and still translates valid manifests", async () => {
+    const state = setup({ names: ["one.json", "bad.json"] });
+    await expect(runCommandMode(state.deps)).resolves.toBe(1);
+    expect(state.writes).toHaveLength(1);
+    expect(state.errors).toContain("Could not read or parse JSON file bad.json\n");
   });
 });

@@ -18,10 +18,11 @@ describe("findCommandFiles", () => {
     expect(result).toEqual({
       names: ["good.json", "bad.json", "shape.json"],
       files: [{ name: "good.json", raw: '{"name":"hello","type":1}' }],
+      invalidFiles: ["bad.json"],
     });
   });
 
-  it("skips files that cannot be read and propagates directory errors", async () => {
+  it("reports files that cannot be read and propagates directory errors", async () => {
     const fsDep = {
       readdir: async () => ["missing.json"],
       readFile: async () => {
@@ -30,7 +31,7 @@ describe("findCommandFiles", () => {
     };
     await expect(
       findCommandFiles({ fsDep, pathDep: { join: (...parts) => parts.join("/") }, cwd: "/target" }),
-    ).resolves.toEqual({ names: ["missing.json"], files: [] });
+    ).resolves.toEqual({ names: ["missing.json"], files: [], invalidFiles: ["missing.json"] });
 
     fsDep.readdir = async () => {
       throw Error("directory missing");

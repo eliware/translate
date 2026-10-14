@@ -41,6 +41,8 @@ Keep the real key private. Do not commit the `.env` file. The CLI exits with cod
 Put `en-US.json` in the target repository root. Run `translate` or `npx translate` from that directory. The CLI reads the source file and the bundled `prompt.json` file.
 
 The CLI writes one JSON file for each supported locale. It overwrites existing locale files. Inspect the generated files before you use or share them.
+The CLI accepts only valid JSON responses. It does not write an invalid response and returns `1`.
+The CLI processes up to five locale translations at a time.
 
 Supported locales:
 
@@ -52,9 +54,10 @@ Keep the source JSON valid. Keep its text and keys in the format that your appli
 
 Use command mode when the target root has no `en-US.json` file. Put command manifest JSON files in that directory. Each manifest must have a string `name` field and a numeric `type` field at its top level.
 
-The CLI scans only JSON files in the target root. It skips files that it cannot read or parse, and files that do not match the required fields. The CLI reads the bundled `prompt-commands.json` file.
+The CLI scans only JSON files in the target root. It skips files that do not match the required fields. It reports files that it cannot read or parse, then continues with other manifests.
+The CLI reads the bundled `prompt-commands.json` file.
 
-The CLI sends each detected manifest to OpenAI. It rewrites each detected file in place. It formats valid JSON output with two spaces. Inspect each file before you use or share it.
+The CLI sends each detected manifest to OpenAI. It rewrites each detected file in place. It formats valid JSON output with two spaces. It does not write invalid JSON responses. Inspect each file before you use or share it.
 
 ## Commands and exit codes
 
@@ -71,7 +74,7 @@ translate --help
 translate --version
 ```
 
-The CLI returns `0` after a completed run. It returns `1` when setup fails or the CLI cannot find usable input. A completed run can report a failed individual translation. Review the CLI output and generated files after each run.
+The CLI returns `0` after a successful run. It returns `1` when setup fails, input is not usable, or a file fails. The CLI can continue with other files after a file fails. Review the CLI output and generated files after each run.
 
 ## Troubleshoot
 

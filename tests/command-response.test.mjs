@@ -5,7 +5,7 @@ describe("formatCommandResponse", () => {
     expect(formatCommandResponse('{"ok":true}')).toBe(JSON.stringify({ ok: true }, null, 2));
   });
 
-  it("returns non-JSON output unchanged", () => {
-    expect(formatCommandResponse("plain output")).toBe("plain output");
+  it("rejects non-JSON output", () => {
+    expect(() => formatCommandResponse("plain output")).toThrow();
   });
 });
