@@ -1,3 +1,7 @@
+import { locales } from "./locales.mjs";
+
+const supportedLocales = new Set([...locales, "en-US"]);
+
 function isRecord(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -9,7 +13,10 @@ function hasTextLength(value, maximum) {
 function hasLocalizationLengths(value, maximum) {
   return (
     value === undefined ||
-    (isRecord(value) && Object.values(value).every((text) => hasTextLength(text, maximum)))
+    (isRecord(value) &&
+      Object.entries(value).every(
+        ([locale, text]) => supportedLocales.has(locale) && hasTextLength(text, maximum),
+      ))
   );
 }
 
@@ -22,7 +29,9 @@ function hasValidCommandLengths(command, isOption = false) {
   if (
     !isOption &&
     command.type > 1 &&
-    (Object.hasOwn(command, "description") || Object.hasOwn(command, "description_localizations"))
+    (Object.hasOwn(command, "description") ||
+      Object.hasOwn(command, "description_localizations") ||
+      (Array.isArray(command.options) && command.options.length > 0))
   ) {
     return false;
   }

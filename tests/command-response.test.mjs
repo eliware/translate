@@ -87,4 +87,32 @@ describe("formatCommandResponse", () => {
       "Command response violates name or description length limits",
     );
   });
+
+  it("rejects unsupported localization keys", () => {
+    expect(() =>
+      formatCommandResponse('{"name":"hello","name_localizations":{"xx":"hola"}}', {
+        name: "hello",
+        type: 1,
+      }),
+    ).toThrow("Command response violates name or description length limits");
+  });
+
+  it("rejects descriptions and options on context commands", () => {
+    expect(() =>
+      formatCommandResponse('{"name":"hello"}', {
+        name: "hello",
+        type: 2,
+        options: [{ name: "user", type: 3 }],
+      }),
+    ).toThrow("Command response violates name or description length limits");
+  });
+
+  it("keeps valid command groups with descriptions inside chat commands", () => {
+    const source = {
+      name: "hello",
+      type: 1,
+      options: [{ name: "group", description: "Group", type: 2 }],
+    };
+    expect(JSON.parse(formatCommandResponse('{"name":"hello"}', source))).toEqual(source);
+  });
 });
