@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs/promises";
-import { config as dotenvConfig } from "dotenv";
-import { getCurrentDirname, log } from "@eliware/common";
+import { log } from "@eliware/common";
+import { loadRuntimeConfig } from "./config.mjs";
 import { translateLocale } from "./worker.mjs";
 import { createProgressBar } from "./progress.mjs";
 import { locales as supportedLocales } from "./locales.mjs";
@@ -12,7 +12,7 @@ export async function runTranslate({
   fsDep = fs,
   pathDep = path,
   processDep = process,
-  dotenvConfigDep = dotenvConfig,
+  dotenvConfigDep,
   translateLocaleDep = translateLocale,
   createProgressBarDep = createProgressBar,
   logDep = log,
@@ -21,20 +21,19 @@ export async function runTranslate({
   locales = supportedLocales,
 } = {}) {
   const writeError = (message) => logDep.error(message.trim());
-  const moduleDir = moduleDirDep || getCurrentDirname(importMeta, pathDep.dirname);
-  const dotenvPath = pathDep.join(moduleDir, "..", ".env");
-  try {
-    await fsDep.access(dotenvPath);
-  } catch {
-    writeError(".env file not found\n");
+  const config = await loadRuntimeConfig({
+    fsDep,
+    pathDep,
+    processDep,
+    dotenvConfigDep,
+    moduleDirDep,
+    importMeta,
+  });
+  if (config.error) {
+    writeError(config.error);
     return 1;
   }
-  dotenvConfigDep({ path: dotenvPath, quiet: true });
-  const apiKey = processDep.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    writeError("Missing OPENAI_API_KEY\n");
-    return 1;
-  }
+  const { moduleDir, apiKey } = config;
   const cwd = processDep.cwd();
   const sourcePath = pathDep.join(cwd, "en-US.json");
   try {

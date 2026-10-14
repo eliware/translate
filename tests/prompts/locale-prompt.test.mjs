@@ -1,4 +1,4 @@
-import { injectLocaleJson } from "../src/locale-prompt.mjs";
+import { injectLocaleJson } from "../../src/prompts/locale-prompt.mjs";
 
 describe("injectLocaleJson", () => {
   it("replaces each locale JSON marker", () => {

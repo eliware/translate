@@ -1,4 +1,5 @@
-import { injectCommandJson } from "./command-prompt.mjs";
+import { injectCommandJson } from "./prompts/command-prompt.mjs";
+import { findCommandFiles } from "./command-files.mjs";
 
 export async function runCommandMode({
   fsDep,
@@ -9,9 +10,9 @@ export async function runCommandMode({
   translateLocaleDep,
   writeError,
 }) {
-  let names;
+  let names, files;
   try {
-    names = (await fsDep.readdir(cwd)).filter((name) => name.endsWith(".json"));
+    ({ names, files } = await findCommandFiles({ fsDep, pathDep, cwd }));
   } catch {
     writeError("Failed to read current directory\n");
     return 1;
@@ -19,14 +20,6 @@ export async function runCommandMode({
   if (names.length === 0) {
     writeError("No .json files found — nothing to do\n");
     return 1;
-  }
-  const files = [];
-  for (const name of names) {
-    try {
-      const raw = await fsDep.readFile(pathDep.join(cwd, name), "utf8");
-      const data = JSON.parse(raw);
-      if (typeof data.name === "string" && typeof data.type === "number") files.push({ name, raw });
-    } catch {}
   }
   if (files.length === 0) {
     writeError("No command JSON manifests detected in this directory\n");

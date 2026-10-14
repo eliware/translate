@@ -1,4 +1,4 @@
-import { injectCommandJson } from "../src/command-prompt.mjs";
+import { injectCommandJson } from "../../src/prompts/command-prompt.mjs";
 
 describe("injectCommandJson", () => {
   it("replaces the first command JSON marker", () => {
