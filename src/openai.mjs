@@ -1,4 +1,4 @@
-import { setTargetLocale } from "./prompt.mjs";
+import { setTargetLocale } from "./prompts/target-locale.mjs";
 
 export async function callOpenAI({ promptObj, targetLocale, apiKey, createOpenAIDep } = {}) {
   const createClient = createOpenAIDep || (await import("@eliware/openai")).createOpenAI;
