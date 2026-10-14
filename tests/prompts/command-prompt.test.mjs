@@ -1,4 +1,4 @@
-import { injectCommandJson } from "../../src/prompts/command-prompt.mjs";
+import { injectCommandJson, loadCommandPrompt } from "../../src/prompts/command-prompt.mjs";
 
 describe("injectCommandJson", () => {
   it("replaces the first command JSON marker", () => {
@@ -23,5 +23,37 @@ describe("injectCommandJson", () => {
     expect(injectCommandJson(null, "command")).toBe(false);
     expect(injectCommandJson({ messages: [] }, "command")).toBe(false);
     expect(injectCommandJson({ messages: [{}] }, "command")).toBe(false);
+  });
+});
+
+describe("loadCommandPrompt", () => {
+  it("reads and parses the command prompt file", async () => {
+    const fsDep = { readFile: async () => '{"messages":[]}' };
+    const pathDep = { join: (...parts) => parts.join("/") };
+    await expect(loadCommandPrompt({ fsDep, pathDep, moduleDir: "/package/src" })).resolves.toEqual(
+      { messages: [] },
+    );
+  });
+
+  it("propagates prompt read and parse errors", async () => {
+    const pathDep = { join: (...parts) => parts.join("/") };
+    await expect(
+      loadCommandPrompt({
+        fsDep: {
+          readFile: async () => {
+            throw Error("read failed");
+          },
+        },
+        pathDep,
+        moduleDir: "/package/src",
+      }),
+    ).rejects.toThrow("read failed");
+    await expect(
+      loadCommandPrompt({
+        fsDep: { readFile: async () => "not JSON" },
+        pathDep,
+        moduleDir: "/package/src",
+      }),
+    ).rejects.toThrow();
   });
 });

@@ -10,16 +10,21 @@ export async function loadRuntimeConfig({
   dotenvConfigDep = dotenvConfig,
   moduleDirDep,
   importMeta = import.meta,
+  writeError = () => {},
 } = {}) {
   const moduleDir = moduleDirDep || getCurrentDirname(importMeta, pathDep.dirname);
   const dotenvPath = pathDep.join(moduleDir, "..", ".env");
   try {
     await fsDep.access(dotenvPath);
   } catch {
+    writeError(".env file not found");
     return { error: ".env file not found" };
   }
   dotenvConfigDep({ path: dotenvPath, quiet: true });
   const apiKey = processDep.env.OPENAI_API_KEY;
-  if (!apiKey) return { error: "Missing OPENAI_API_KEY" };
+  if (!apiKey) {
+    writeError("Missing OPENAI_API_KEY");
+    return { error: "Missing OPENAI_API_KEY" };
+  }
   return { moduleDir, dotenvPath, apiKey };
 }

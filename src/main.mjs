@@ -29,9 +29,9 @@ export async function runTranslate({
     dotenvConfigDep,
     moduleDirDep,
     importMeta,
+    writeError,
   });
   if (config.error) {
-    writeError(config.error);
     return 1;
   }
   const { moduleDir, apiKey } = config;

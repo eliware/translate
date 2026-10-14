@@ -1,5 +1,6 @@
-import { injectCommandJson } from "./prompts/command-prompt.mjs";
+import { injectCommandJson, loadCommandPrompt } from "./prompts/command-prompt.mjs";
 import { findCommandFiles } from "./command-files.mjs";
+import { formatCommandResponse } from "./command-response.mjs";
 
 export async function runCommandMode({
   fsDep,
@@ -27,9 +28,7 @@ export async function runCommandMode({
   }
   let prompt;
   try {
-    prompt = JSON.parse(
-      await fsDep.readFile(pathDep.join(moduleDir, "..", "prompt-commands.json"), "utf8"),
-    );
+    prompt = await loadCommandPrompt({ fsDep, pathDep, moduleDir });
   } catch {
     writeError("Failed to read or parse prompt-commands.json\n");
     return 1;
@@ -45,10 +44,7 @@ export async function runCommandMode({
           return;
         }
         const result = await translateLocaleDep({ locale: "", promptObj: commandPrompt, apiKey });
-        let output = result;
-        try {
-          output = JSON.stringify(JSON.parse(result), null, 2);
-        } catch {}
+        const output = formatCommandResponse(result);
         await fsDep.writeFile(pathDep.join(cwd, name), output, "utf8");
       } catch {
         failed = true;

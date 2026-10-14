@@ -1,5 +1,11 @@
 import { replaceJsonMarkers } from "./json-marker.mjs";
 
+export async function loadCommandPrompt({ fsDep, pathDep, moduleDir }) {
+  const promptPath = pathDep.join(moduleDir, "..", "prompt-commands.json");
+  const raw = await fsDep.readFile(promptPath, "utf8");
+  return JSON.parse(raw);
+}
+
 export function injectCommandJson(promptObj, json) {
   if (!promptObj || !Array.isArray(promptObj.messages)) return false;
   if (replaceJsonMarkers(promptObj.messages, json)) return true;
