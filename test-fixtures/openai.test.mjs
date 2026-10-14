@@ -8,8 +8,11 @@ describe("callOpenAI", () => {
     const promptObj = {
       model: "gpt",
       messages: [
-        { role: "user", content: [{ text: "en" }] },
-        { role: "user", content: [{ text: "Translate this to locale: {target_locale}." }] },
+        { role: "user", content: [{ type: "text", text: "en" }] },
+        {
+          role: "user",
+          content: [{ type: "text", text: "Translate this to locale: {target_locale}." }],
+        },
       ],
       response_format: {},
       temperature: 1,
@@ -42,6 +45,9 @@ describe("callOpenAI", () => {
       presence_penalty: 0,
     });
     expect(result).toBe("translated");
+    expect(promptObj.messages[1].content[0].text).toBe(
+      "Translate this to locale: {target_locale}.",
+    );
   });
 
   it("supports prompts without a translatable second message", async () => {

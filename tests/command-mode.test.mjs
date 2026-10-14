@@ -71,14 +71,28 @@ describe("runCommandMode", () => {
   it("reports failed prompt injection and translation", async () => {
     const noInject = setup();
     noInject.files.set("prompt-commands.json", '{"messages":[{"content":[]}]}');
-    await runCommandMode(noInject.deps);
+    await expect(runCommandMode(noInject.deps)).resolves.toBe(1);
     expect(noInject.errors).toContain("Could not inject command JSON into prompt for one.json\n");
 
     const translateFail = setup();
     translateFail.deps.translateLocaleDep = async () => {
       throw Error("translation failed");
     };
-    await runCommandMode(translateFail.deps);
+    await expect(runCommandMode(translateFail.deps)).resolves.toBe(1);
     expect(translateFail.errors).toContain("Failed to translate command file one.json\n");
+  });
+
+  it("continues with other manifests after one translation fails", async () => {
+    const state = setup({ names: ["one.json", "two.json"] });
+    state.files.set("two.json", '{"name":"two","type":1}');
+    state.deps.translateLocaleDep = async ({ promptObj }) => {
+      if (promptObj.messages[0].content[0].text.includes('"name":"one"')) {
+        throw Error("translation failed");
+      }
+      return '{"translated":true}';
+    };
+    await expect(runCommandMode(state.deps)).resolves.toBe(1);
+    expect(state.writes).toHaveLength(1);
+    expect(state.writes[0][0]).toBe("/target/two.json");
   });
 });

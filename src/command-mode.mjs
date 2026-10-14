@@ -34,11 +34,13 @@ export async function runCommandMode({
     writeError("Failed to read or parse prompt-commands.json\n");
     return 1;
   }
+  let failed = false;
   await Promise.all(
     files.map(async ({ name, raw }) => {
       try {
         const commandPrompt = JSON.parse(JSON.stringify(prompt));
         if (!injectCommandJson(commandPrompt, raw)) {
+          failed = true;
           writeError(`Could not inject command JSON into prompt for ${name}\n`);
           return;
         }
@@ -49,9 +51,10 @@ export async function runCommandMode({
         } catch {}
         await fsDep.writeFile(pathDep.join(cwd, name), output, "utf8");
       } catch {
+        failed = true;
         writeError(`Failed to translate command file ${name}\n`);
       }
     }),
   );
-  return 0;
+  return failed ? 1 : 0;
 }

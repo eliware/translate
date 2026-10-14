@@ -85,7 +85,7 @@ describe("runLocaleMode", () => {
     state.deps.fsDep.writeFile = async (path) => {
       if (String(path).endsWith("en-US.json")) throw Error("write failed");
     };
-    await expect(runLocaleMode(state.deps)).resolves.toBe(0);
+    await expect(runLocaleMode(state.deps)).resolves.toBe(1);
     expect(state.errors).toContain("Failed to translate fr\n");
     expect(state.updates).toEqual(expect.arrayContaining(["fr", "en-US"]));
   });

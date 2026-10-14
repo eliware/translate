@@ -36,6 +36,7 @@ export async function runLocaleMode({
     return 1;
   }
   const progress = createProgressBarDep(locales.length, processDep.stdout);
+  let failed = false;
   await Promise.all(
     locales.map(async (locale) => {
       if (locale === "en-US") {
@@ -50,10 +51,11 @@ export async function runLocaleMode({
         const result = await translateLocaleDep({ locale, promptObj: localePrompt, apiKey });
         await fsDep.writeFile(pathDep.join(cwd, `${locale}.json`), result);
       } catch {
+        failed = true;
         writeError(`Failed to translate ${locale}\n`);
       }
       progress.update(locale);
     }),
   );
-  return 0;
+  return failed ? 1 : 0;
 }
