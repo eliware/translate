@@ -8,6 +8,7 @@ import { locales as supportedLocales } from "./locales.mjs";
 import { runLocaleMode } from "./locale-mode.mjs";
 import { runCommandMode } from "./command-mode.mjs";
 import { createErrorWriter } from "./cli-error.mjs";
+import { selectTranslationMode } from "./mode-selector.mjs";
 
 export async function runTranslate({
   fsDep = fs,
@@ -36,10 +37,8 @@ export async function runTranslate({
   }
   const { moduleDir, apiKey } = config;
   const cwd = processDep.cwd();
-  const sourcePath = pathDep.join(cwd, "en-US.json");
-  try {
-    await fsDep.access(sourcePath);
-  } catch {
+  const mode = await selectTranslationMode({ fsDep, pathDep, cwd });
+  if (mode === "command") {
     return runCommandMode({
       fsDep,
       pathDep,
