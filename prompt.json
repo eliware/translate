@@ -1,17 +1,17 @@
 {
-    "model": "gpt-5.6-luna",
-    "messages": [
+  "model": "gpt-5.6-luna",
+  "messages": [
+    {
+      "role": "user",
+      "content": [
         {
-            "role": "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "en-US.json content:\n{json}\n\nTranslate this to locale: {target_locale}.\nKeep any {placeholders} intact.\nSend back the translated JSON with unescaped unicode."
-                }
-            ]
+          "type": "text",
+          "text": "en-US.json content:\n{json}\n\nTranslate this to locale: {target_locale}.\nKeep any {placeholders} intact.\nSend back the translated JSON with unescaped unicode."
         }
-    ],
-    "response_format": {
-        "type": "json_object"
+      ]
     }
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
 }

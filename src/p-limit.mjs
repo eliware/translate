@@ -8,16 +8,19 @@ export default function pLimit(concurrency) {
     if (queue.length === 0 || activeCount >= concurrency) return;
     activeCount++;
     const { fn, resolve, reject } = queue.shift();
-    fn().then(resolve, reject).finally(() => {
-      activeCount--;
-      next();
-    });
+    fn()
+      .then(resolve, reject)
+      .finally(() => {
+        activeCount--;
+        next();
+      });
   };
 
-  return fn => new Promise((resolve, reject) => {
-    queue.push({ fn, resolve, reject });
-    next();
-  });
+  return (fn) =>
+    new Promise((resolve, reject) => {
+      queue.push({ fn, resolve, reject });
+      next();
+    });
 }
 // For Jest: allow named export for mocking
 export { pLimit };

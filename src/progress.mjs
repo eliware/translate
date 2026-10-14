@@ -6,7 +6,7 @@ export function createProgressBar(total, output = process.stdout) {
     completed++;
     output.write(`\rTranslating: ${completed}/${total} (${locale})`);
     if (completed === total) {
-      output.write('\nAll translations complete.\n');
+      output.write("\nAll translations complete.\n");
     }
   }
   return { update };

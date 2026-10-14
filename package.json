@@ -1,72 +1,110 @@
 {
-    "name": "@eliware/translate",
-    "version": "2.0.0",
-    "type": "module",
-    "description": "A tool for translating locale files for discord apps built on @eliware/discord",
-    "main": "translate.mjs",
-    "files": [
-        "src",
-        "prompt.json",
-        "prompt-commands.json",
-        "translate.mjs",
-        "README.md",
-        "RELEASE_NOTES.md",
-        "LICENSE"
+  "name": "@eliware/translate",
+  "version": "12.0.0",
+  "type": "module",
+  "description": "A tool for translating locale files for discord apps built on @eliware/discord",
+  "keywords": [
+    "translate",
+    "translation",
+    "discord",
+    "locales",
+    "localization",
+    "eliware",
+    "nodejs"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "bin": {
+    "translate": "bin/translate.mjs"
+  },
+  "files": [
+    "src/",
+    "docs/",
+    "README.md",
+    "AGENTS.md",
+    "LICENSE",
+    "RELEASE_NOTES.md",
+    "bin/",
+    "specs/",
+    "prompt.json",
+    "prompt-commands.json",
+    ".env.example"
+  ],
+  "scripts": {
+    "test": "eliware-test",
+    "lint": "eliware-test --lint",
+    "format": "eliware-test --format",
+    "format:check": "eliware-test --format-check",
+    "audit": "eliware-test --audit",
+    "pack": "eliware-test --pack"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "dependencies": {
+    "@eliware/common": "^12.0.1",
+    "dotenv": "^18.0.7",
+    "openai": "^7.32.0"
+  },
+  "devDependencies": {
+    "@eliware/test": "^12.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.mjs"
     ],
-    "scripts": {
-        "test": "eliware-test",
-        "lint": "eliware-test --lint"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/eliware/translate.git"
-    },
-    "keywords": [
-        "translate",
-        "translation",
-        "discord",
-        "locales",
-        "localization",
-        "eliware",
-        "nodejs"
+    "collectCoverageFrom": [
+      "src/**/*.mjs"
     ],
-    "author": "Eli Sterling <eli@eliware.org>",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/eliware/translate/issues"
-    },
-    "homepage": "https://github.com/eliware/translate#readme",
-    "dependencies": {
-        "dotenv": "^17.4.2",
-        "openai": "^7.5.0"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "testMatch": [
-            "**/?(*.)+(spec|test).[jt]s?(x)",
-            "**/?(*.)+(spec|test).mjs"
-        ]
-    },
-    "devDependencies": {
-        "@eliware/test": "^2.0.0"
-    },
-    "prettier": {
-      "printWidth": 100,
-      "tabWidth": 2,
-      "useTabs": false,
-      "semi": true,
-      "singleQuote": false,
-      "quoteProps": "as-needed",
-      "jsxSingleQuote": false,
-      "trailingComma": "all",
-      "bracketSpacing": true,
-      "bracketSameLine": false,
-      "arrowParens": "always",
-      "proseWrap": "preserve",
-      "endOfLine": "lf"
-    },
-    "eliware": {
-      "id": "E-1230",
-      "apply": ["general", "application", "cli", "npm-published"]
+    "coverageReporters": [
+      "text",
+      "json-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
     }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "proseWrap": "preserve",
+    "endOfLine": "lf"
+  },
+  "author": "Eliware <eliware@eliware.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliware/translate.git"
+  },
+  "homepage": "https://github.com/eliware/translate#readme",
+  "bugs": {
+    "url": "https://github.com/eliware/translate/issues"
+  },
+  "eliware": {
+    "id": "E-1230",
+    "apply": [
+      "general",
+      "application",
+      "cli",
+      "npm-published"
+    ]
+  }
 }

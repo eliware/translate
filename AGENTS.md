@@ -1,30 +1,41 @@
-# Agent guidance
+# AGENTS.md
 
-`@eliware/translate` is a Node.js 26+ ESM CLI that translates Discord locale
-files or command manifests with OpenAI. Run from the target repository root.
+## Project
 
-## Required validation
+Maintain `@eliware/translate` as a Node.js 26 ESM CLI. Translate Discord locale files and command manifests with OpenAI.
 
-```text
-npm test
-npm run lint
-npm audit --omit=dev --audit-level=moderate
-npm pack --dry-run
-```
+## Scope and boundaries
 
-`npm test` uses `@eliware/test` and must pass 100% statements, branches,
-functions, and lines. `npm run lint` must produce zero warnings. Coverage does
-not replace project-specific regression or integration checks.
+Run the CLI from the target repository root. Translation can overwrite locale files and command manifests.
 
-CI runs these baseline gates on every `main` push, pull request, and `v*` tag
-on Ubuntu and Windows. npm publication is tag-only and requires both platform
-jobs to pass.
+## Layout
 
-## Modes and safety
+Keep implementation modules in `src/`. Keep the CLI in `bin/`. Keep tests in `tests/`. Keep docs in `docs/` and specifications in `specs/`.
 
-- Locale mode uses `en-US.json` and `prompt.json`.
-- Command mode scans JSON command manifests and uses `prompt-commands.json`.
-- `.env` and `OPENAI_API_KEY` are required at runtime; never commit them.
-- Preserve ESM, focused modules, and tests for behavior changes.
-- Translation overwrites generated output files; inspect changes before commit.
-- Do not publish, push, tag, or release without explicit authorization.
+## Development
+
+Use native ESM. Keep modules focused. Add a matching test for each source module. Keep `.env` and API keys out of source control.
+
+## Validation
+
+Use Node.js 26 or later. Run `npm test`, `npm run lint`, `npm run audit`, `npm run format`, `npm run format:check`, and `npm run pack`.
+
+## Security
+
+The CLI sends input JSON to OpenAI. Do not include secrets or private data in source files. Review generated files before commit.
+
+## Changes
+
+Update release notes for user-visible changes. Do not publish, push, tag, or release without explicit authorization.
+
+## Application
+
+Locale mode reads `en-US.json` and `prompt.json`. Command mode reads JSON manifests and `prompt-commands.json`. Store `OPENAI_API_KEY` in `.env` at the CLI repository root.
+
+## CLI
+
+Use `translate --help` for usage. Use `translate --version` for the installed version. Exit code 0 means success. Exit code 1 means a setup or processing error.
+
+## npm publication
+
+The public package is `@eliware/translate`. The version in `package.json` sets the package version. Run `npm run pack` before publication. Follow Eliware Operations approval before publication.

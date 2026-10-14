@@ -1,0 +1,11 @@
+version: "12.0"
+description: Defines repository-specific requirements for @eliware/translate.
+directives:
+  - id: E-1230.0
+    dos:
+      - Translate locale files and command manifests with the OpenAI API.
+      - Keep locale and command prompts in the repository root.
+      - Keep generated translations in the target repository.
+    donts:
+      - Do not commit API keys or user locale data.
+      - Do not publish or release without approval.
