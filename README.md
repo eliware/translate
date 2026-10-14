@@ -60,11 +60,11 @@ Set `OPENAI_API_KEY` in `.env` at the installed package root. Locale mode uses `
 
 ## Operations
 
-Run the CLI from the target repository root. Translation overwrites generated locale files and detected command manifests.
+Run the CLI from the target repository root. The CLI writes files only when you use `--yes`. It can overwrite existing locale files and command manifests.
 
 ## Commands
 
-Run `translate` to translate locale files or command manifests. Run `translate --help` for usage. Run `translate --version` to show the package version.
+Run `translate` or `translate --help` to read usage. Run `translate --dry-run` to list target files without API calls or file writes. Run `translate --yes` to send API requests and write translations. Run `translate --version` to show the package version.
 
 ## Exit codes
 

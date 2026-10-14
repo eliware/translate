@@ -4,6 +4,9 @@
 
 ### Added
 
+- Add `translate --dry-run` to list target files without API calls or file writes.
+- Require `translate --yes` before the CLI sends API requests or writes files.
+- Show help when users run `translate` without flags.
 - Add `translate --help` and `translate --version`.
 - Add command mode for Discord application command manifests.
 - Add a user guide for setup, use, configuration, and error handling.

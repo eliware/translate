@@ -10,6 +10,8 @@ export async function runCommandMode({
   apiKey,
   translateLocaleDep,
   writeError,
+  dryRun = false,
+  writeInfo = () => {},
 }) {
   let names, files, invalidFiles;
   try {
@@ -26,6 +28,10 @@ export async function runCommandMode({
   if (files.length === 0) {
     writeError("No command JSON manifests detected in this directory\n");
     return 1;
+  }
+  if (dryRun) {
+    for (const { name } of files) writeInfo(`Would translate ${name}\n`);
+    return invalidFiles.length > 0 ? 1 : 0;
   }
   let prompt;
   try {

@@ -38,6 +38,29 @@ describe("runCommandMode", () => {
     expect(state.errors).toEqual([]);
   });
 
+  it("lists command targets without API calls or file writes in dry-run mode", async () => {
+    const state = setup();
+    const messages = [];
+    state.deps.dryRun = true;
+    state.deps.writeInfo = (message) => messages.push(message);
+    let translateCalls = 0;
+    state.deps.translateLocaleDep = async () => {
+      translateCalls += 1;
+      return '{"name":"one","type":1}';
+    };
+    await expect(runCommandMode(state.deps)).resolves.toBe(0);
+    expect(translateCalls).toBe(0);
+    expect(state.writes).toEqual([]);
+    expect(messages).toEqual(["Would translate one.json\n"]);
+  });
+
+  it("returns failure for invalid files during dry-run", async () => {
+    const state = setup({ names: ["one.json", "bad.json"] });
+    state.deps.dryRun = true;
+    await expect(runCommandMode(state.deps)).resolves.toBe(1);
+    expect(state.writes).toEqual([]);
+  });
+
   it("does not write non-JSON output and reports the invalid response", async () => {
     const state = setup({ response: "plain output" });
     state.files.set("prompt-commands.json", '{"messages":[{"content":[{"text":"Rules"}]}]}');

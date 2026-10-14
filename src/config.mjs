@@ -11,8 +11,10 @@ export async function loadRuntimeConfig({
   moduleDirDep,
   importMeta = import.meta,
   writeError = () => {},
+  dryRun = false,
 } = {}) {
   const moduleDir = moduleDirDep || getCurrentDirname(importMeta, pathDep.dirname);
+  if (dryRun) return { moduleDir };
   const dotenvPath = pathDep.join(moduleDir, "..", ".env");
   try {
     await fsDep.access(dotenvPath);

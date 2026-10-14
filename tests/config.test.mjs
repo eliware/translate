@@ -35,6 +35,15 @@ describe("loadRuntimeConfig", () => {
     });
   });
 
+  it("skips environment loading in dry-run mode", async () => {
+    const deps = setup({ readable: false, apiKey: "" });
+    await expect(
+      loadRuntimeConfig({ ...deps, moduleDirDep: "/package/src", dryRun: true }),
+    ).resolves.toEqual({ moduleDir: "/package/src" });
+    expect(deps.fsDep.access).not.toHaveBeenCalled();
+    expect(deps.dotenvConfigDep).not.toHaveBeenCalled();
+  });
+
   it("derives the module directory from import metadata", async () => {
     const deps = setup();
     const result = await loadRuntimeConfig(deps);

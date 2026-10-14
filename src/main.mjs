@@ -21,7 +21,11 @@ export async function runTranslate({
   moduleDirDep,
   importMeta = import.meta,
   locales = supportedLocales,
+  dryRun = false,
+  yes = false,
+  writeInfo = (message) => process.stdout.write(message),
 } = {}) {
+  const previewOnly = dryRun || !yes;
   const writeError = createErrorWriter(logDep);
   const config = await loadRuntimeConfig({
     fsDep,
@@ -31,6 +35,7 @@ export async function runTranslate({
     moduleDirDep,
     importMeta,
     writeError,
+    dryRun: previewOnly,
   });
   if (config.error) {
     return 1;
@@ -47,6 +52,8 @@ export async function runTranslate({
       apiKey,
       translateLocaleDep,
       writeError,
+      dryRun: previewOnly,
+      writeInfo,
     });
   }
   return runLocaleMode({
@@ -60,5 +67,7 @@ export async function runTranslate({
     translateLocaleDep,
     createProgressBarDep,
     writeError,
+    dryRun: previewOnly,
+    writeInfo,
   });
 }

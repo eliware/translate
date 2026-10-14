@@ -50,6 +50,30 @@ describe("runLocaleMode", () => {
     expect(state.updates).toEqual(expect.arrayContaining(["fr", "en-US"]));
   });
 
+  it("lists locale targets without API calls or file writes in dry-run mode", async () => {
+    const state = setup();
+    const messages = [];
+    state.deps.dryRun = true;
+    state.deps.locales = ["fr", "en-US"];
+    state.deps.writeInfo = (message) => messages.push(message);
+    let translateCalls = 0;
+    state.deps.translateLocaleDep = async () => {
+      translateCalls += 1;
+      return '{"en":"Hello"}';
+    };
+    await expect(runLocaleMode(state.deps)).resolves.toBe(0);
+    expect(translateCalls).toBe(0);
+    expect(state.writes).toEqual([]);
+    expect(messages).toEqual(["Would translate fr.json\n"]);
+  });
+
+  it("accepts the default output handler in dry-run mode", async () => {
+    const state = setup();
+    state.deps.dryRun = true;
+    await expect(runLocaleMode(state.deps)).resolves.toBe(0);
+    expect(state.writes).toEqual([]);
+  });
+
   it("reports source and prompt read or parse errors", async () => {
     const sourceFail = setup();
     sourceFail.deps.fsDep.readFile = async () => {

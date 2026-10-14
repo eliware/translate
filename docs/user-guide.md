@@ -40,7 +40,8 @@ Keep the real key private. Do not commit the `.env` file. The CLI exits with cod
 
 Put `en-US.json` in the target repository root. Run `translate` or `npx translate` from that directory. The CLI reads the source file and the bundled `prompt.json` file.
 
-The CLI writes one JSON file for each supported locale. It overwrites existing locale files. Inspect the generated files before you use or share them.
+Run `translate --dry-run` to list target files. The CLI does not call OpenAI or write files in this mode. It does not need `.env` or an API key.
+Run `translate --yes` to call OpenAI and write translated files. The CLI can overwrite existing locale files.
 The CLI accepts only responses that keep the source JSON keys, arrays, and value types. It does not write a response with a different structure and returns `1`.
 The CLI processes up to five locale translations at a time.
 
@@ -57,15 +58,17 @@ Use command mode when the target root has no `en-US.json` file. Put command mani
 The CLI scans only JSON files in the target root. It skips files that do not match the required fields. It reports files that it cannot read or parse, then continues with other manifests.
 The CLI reads the bundled `prompt-commands.json` file.
 
-The CLI sends each detected manifest to OpenAI. It keeps the source fields and option structure. It updates command names, descriptions, and their localization maps. It formats valid JSON output with two spaces. It does not write invalid JSON responses. Inspect each file before you use or share it.
+The CLI keeps source fields and option structure. It updates command names, descriptions, and localization maps. It formats valid JSON output with two spaces. It does not write invalid JSON responses.
+Run `translate --dry-run` to list command files. The CLI does not call OpenAI or write files in this mode. It does not need `.env` or an API key.
+Run `translate --yes` to call OpenAI and write translated command files. The CLI can overwrite existing command files.
 Command names and localized names must contain 1 to 32 characters. Description fields must contain 1 to 100 characters.
 
 ## Commands and exit codes
 
-Run the CLI without arguments to translate files:
+Run `translate` or `translate --help` to read usage. Run `translate --dry-run` to list target files.
 
 ```sh
-translate
+translate --dry-run
 ```
 
 Use these options to read help or version information:
@@ -73,6 +76,7 @@ Use these options to read help or version information:
 ```sh
 translate --help
 translate --version
+translate --yes
 ```
 
 The CLI returns `0` after a successful run. It returns `1` when setup fails, input is not usable, or a file fails. The CLI can continue with other files after a file fails. Review the CLI output and generated files after each run.

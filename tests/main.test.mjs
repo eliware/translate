@@ -57,7 +57,7 @@ function setup({ localeMode = true, envExists = true, apiKey = "key" } = {}) {
 describe("runTranslate", () => {
   it("loads the package environment and translates locale files", async () => {
     const state = setup();
-    await expect(runTranslate(state.deps)).resolves.toBe(0);
+    await expect(runTranslate({ ...state.deps, yes: true })).resolves.toBe(0);
     expect(state.dotenvCalls).toEqual([{ path: "/package/src/../.env", quiet: true }]);
     expect(state.translateCalls[0]).toMatchObject({ locale: "fr", apiKey: "key" });
     expect(state.writes).toEqual([["/target/fr.json", '{"en":"Hello"}']]);
@@ -65,30 +65,56 @@ describe("runTranslate", () => {
 
   it("selects command mode when the target has no English locale file", async () => {
     const state = setup({ localeMode: false });
-    await expect(runTranslate(state.deps)).resolves.toBe(0);
+    await expect(runTranslate({ ...state.deps, yes: true })).resolves.toBe(0);
     expect(state.translateCalls[0]).toMatchObject({ locale: "", apiKey: "key" });
     expect(state.writes).toEqual([
       ["/target/command.json", '{\n  "name": "hello",\n  "type": 1\n}', "utf8"],
     ]);
   });
 
+  it("lists files without an API key, an OpenAI call, or file writes by default", async () => {
+    const state = setup({ apiKey: "" });
+    const output = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+    try {
+      await expect(runTranslate(state.deps)).resolves.toBe(0);
+      expect(state.translateCalls).toEqual([]);
+      expect(state.writes).toEqual([]);
+      expect(output).toHaveBeenCalledWith("Would translate fr.json\n");
+    } finally {
+      output.mockRestore();
+    }
+  });
+
+  it("keeps dry-run active when --yes is also set", async () => {
+    const state = setup();
+    await expect(
+      runTranslate({ ...state.deps, yes: true, dryRun: true, writeInfo: () => {} }),
+    ).resolves.toBe(0);
+    expect(state.translateCalls).toEqual([]);
+    expect(state.writes).toEqual([]);
+  });
+
   it("reports missing environment files and API keys", async () => {
     const noEnv = setup({ envExists: false });
-    await expect(runTranslate(noEnv.deps)).resolves.toBe(1);
+    await expect(runTranslate({ ...noEnv.deps, yes: true })).resolves.toBe(1);
     expect(noEnv.errors).toContain(".env file not found");
 
     const noKey = setup({ apiKey: "" });
-    await expect(runTranslate(noKey.deps)).resolves.toBe(1);
+    await expect(runTranslate({ ...noKey.deps, yes: true })).resolves.toBe(1);
     expect(noKey.errors).toContain("Missing OPENAI_API_KEY");
   });
 
   it("uses the default dependencies", async () => {
     const originalError = log.error;
+    const output = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const cwd = jest.spyOn(process, "cwd").mockReturnValue("/missing-target");
     log.error = jest.fn();
     try {
       await expect(runTranslate()).resolves.toBe(1);
     } finally {
       log.error = originalError;
+      output.mockRestore();
+      cwd.mockRestore();
     }
   });
 });

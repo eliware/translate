@@ -16,6 +16,8 @@ export async function runLocaleMode({
   translateLocaleDep,
   createProgressBarDep,
   writeError,
+  dryRun = false,
+  writeInfo = () => {},
 }) {
   const sourcePath = pathDep.join(cwd, "en-US.json");
   let source, sourceData, prompt;
@@ -30,6 +32,12 @@ export async function runLocaleMode({
   } catch {
     writeError("Failed to parse en-US.json\n");
     return 1;
+  }
+  if (dryRun) {
+    for (const locale of locales) {
+      if (locale !== "en-US") writeInfo(`Would translate ${locale}.json\n`);
+    }
+    return 0;
   }
   try {
     prompt = JSON.parse(await fsDep.readFile(pathDep.join(moduleDir, "..", "prompt.json"), "utf8"));
