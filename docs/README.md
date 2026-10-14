@@ -1,3 +1,3 @@
 # Documentation
 
-This folder contains user documentation for @eliware/translate.
+- [User guide](user-guide.md)

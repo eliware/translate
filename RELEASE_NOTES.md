@@ -1,14 +1,11 @@
 # Release Notes
 
-## Unreleased
-
-### Changed
-
-- Use current shared dependencies and repository conventions.
-- Add CLI help, version, logging, error handlers, and signal cleanup.
-
 ## 12.0.0 — 2026-10-13
 
+### Added
+
+The CLI supports `--help` and `--version`.
+
 ### Changed
 
-- Align the CLI with the shared v12 repository validation profile.
+The CLI now requires Node.js 26 or later. OpenAI requests use the shared `@eliware/openai` client and the Responses API. Shared runtime tools handle logs, errors, and process signals.

@@ -24,51 +24,47 @@ A tool for translating locale files for discord apps built on @eliware/discord
 
 ## Features
 
-Translate `en-US.json` into supported Discord locales. Translate Discord command manifests in place.
+Translate `en-US.json` into supported Discord locales. Translate command manifests in place.
 
 ## Requirements
 
-Use Node.js 26 or later. Get an OpenAI API key. Keep the key in `.env` at the repository root.
+Use Node.js 26 or later. Get an OpenAI API key.
 
 ## Setup
 
-Install the package with `npm install @eliware/translate`. Create `.env` with `OPENAI_API_KEY=your_api_key`.
+Install the package with `npm install @eliware/translate`. Create `.env` at the installed package root. Set `OPENAI_API_KEY` in that file.
 
 ## Usage
 
-Run `translate` from a directory with locale files or command manifests. Read [Release Notes](RELEASE_NOTES.md) for version changes.
-
-Locale mode reads `en-US.json` and `prompt.json`. It writes one file for each supported locale and overwrites existing files.
-
-Command mode runs when `en-US.json` is absent. It scans JSON files with string `name` and numeric `type` fields. It rewrites matching files.
+Run `translate` from the target repository root. Read the [user guide](docs/user-guide.md) for setup and workflow details. Read the [release notes](RELEASE_NOTES.md) for changes.
 
 ## Development
 
-Run `npm install` to install dependencies. Read [documentation](docs/README.md), [agent guidance](AGENTS.md), and [specifications](specs/README.md).
+Run `npm install` to install dependencies. Read [documentation](docs/README.md) and [specifications](specs/README.md).
 
 ## Testing
 
-Run `npm test` for aggregate checks. Run `npm run lint` for lint checks. Run `npm run format:check` to check formatting.
+Run `npm test` for aggregate checks. Run `npm run lint` for lint checks.
 
 ## Troubleshooting
 
-Check `.env` and `OPENAI_API_KEY` when the CLI reports a setup error. Check the input JSON when the CLI skips a file.
+Check `.env` and `OPENAI_API_KEY` when setup fails. Check the input JSON when the CLI skips a file.
 
 ## Security
 
-Keep API keys out of source control. The CLI sends source JSON to OpenAI for translation. Review files before you share them.
+Keep API keys out of source control. The CLI sends source JSON to OpenAI. Review generated files before you share them.
 
 ## Configuration
 
-Set `OPENAI_API_KEY` in `.env`. Locale mode uses `prompt.json`. Command mode uses `prompt-commands.json`.
+Set `OPENAI_API_KEY` in `.env` at the installed package root. Locale mode uses `prompt.json`. Command mode uses `prompt-commands.json`.
 
 ## Operations
 
-Run the CLI from the target directory. Translation replaces generated locale files and matching command manifests.
+Run the CLI from the target repository root. Translation overwrites generated locale files and detected command manifests.
 
 ## Commands
 
-`translate` translates locale files or command manifests. Use `translate --help` for command details. Use `translate --version` to show the package version.
+Run `translate` to translate locale files or command manifests. Run `translate --help` for usage. Run `translate --version` to show the package version.
 
 ## Exit codes
 
