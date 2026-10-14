@@ -42,7 +42,10 @@ export async function runLocaleMode({
       if (locale === "en-US") {
         try {
           await fsDep.writeFile(sourcePath, source);
-        } catch {}
+        } catch {
+          failed = true;
+          writeError("Failed to write en-US.json\n");
+        }
         progress.update(locale);
         return;
       }

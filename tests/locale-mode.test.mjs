@@ -76,17 +76,25 @@ describe("runLocaleMode", () => {
     expect(state.errors).toContain("Invalid prompt.json structure\n");
   });
 
-  it("reports a failed locale translation and ignores English write errors", async () => {
+  it("reports a failed locale translation", async () => {
     const state = setup();
-    state.deps.locales = ["fr", "en-US"];
+    state.deps.locales = ["fr"];
     state.deps.translateLocaleDep = async () => {
       throw Error("translation failed");
     };
-    state.deps.fsDep.writeFile = async (path) => {
-      if (String(path).endsWith("en-US.json")) throw Error("write failed");
-    };
     await expect(runLocaleMode(state.deps)).resolves.toBe(1);
     expect(state.errors).toContain("Failed to translate fr\n");
-    expect(state.updates).toEqual(expect.arrayContaining(["fr", "en-US"]));
+    expect(state.updates).toContain("fr");
+  });
+
+  it("reports a failed write to the English source", async () => {
+    const state = setup();
+    state.deps.locales = ["en-US"];
+    state.deps.fsDep.writeFile = async () => {
+      throw Error("write failed");
+    };
+    await expect(runLocaleMode(state.deps)).resolves.toBe(1);
+    expect(state.errors).toContain("Failed to write en-US.json\n");
+    expect(state.updates).toContain("en-US");
   });
 });
