@@ -39,7 +39,7 @@ function setup({ localeMode = true, envExists = true, apiKey = "key" } = {}) {
       dotenvConfigDep: (options) => dotenvCalls.push(options),
       translateLocaleDep: async (input) => {
         translateCalls.push(input);
-        return '{"ok":true}';
+        return input.locale ? '{"en":"Hello"}' : '{"name":"hello","type":1}';
       },
       createProgressBarDep: () => ({ update: () => {} }),
       logDep: { error: (message) => errors.push(message) },
@@ -60,14 +60,16 @@ describe("runTranslate", () => {
     await expect(runTranslate(state.deps)).resolves.toBe(0);
     expect(state.dotenvCalls).toEqual([{ path: "/package/src/../.env", quiet: true }]);
     expect(state.translateCalls[0]).toMatchObject({ locale: "fr", apiKey: "key" });
-    expect(state.writes).toEqual([["/target/fr.json", '{"ok":true}']]);
+    expect(state.writes).toEqual([["/target/fr.json", '{"en":"Hello"}']]);
   });
 
   it("selects command mode when the target has no English locale file", async () => {
     const state = setup({ localeMode: false });
     await expect(runTranslate(state.deps)).resolves.toBe(0);
     expect(state.translateCalls[0]).toMatchObject({ locale: "", apiKey: "key" });
-    expect(state.writes).toEqual([["/target/command.json", '{\n  "ok": true\n}', "utf8"]]);
+    expect(state.writes).toEqual([
+      ["/target/command.json", '{\n  "name": "hello",\n  "type": 1\n}', "utf8"],
+    ]);
   });
 
   it("reports missing environment files and API keys", async () => {

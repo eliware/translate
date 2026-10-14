@@ -32,7 +32,9 @@ describe("runCommandMode", () => {
   it("translates detected manifests and formats valid JSON", async () => {
     const state = setup();
     await expect(runCommandMode(state.deps)).resolves.toBe(0);
-    expect(state.writes).toEqual([["/target/one.json", '{\n  "ok": true\n}', "utf8"]]);
+    expect(state.writes).toEqual([
+      ["/target/one.json", '{\n  "name": "one",\n  "type": 1\n}', "utf8"],
+    ]);
     expect(state.errors).toEqual([]);
   });
 
@@ -90,11 +92,16 @@ describe("runCommandMode", () => {
       if (promptObj.messages[0].content[0].text.includes('"name":"one"')) {
         throw Error("translation failed");
       }
-      return '{"translated":true}';
+      return '{"name":"two","type":1,"name_localizations":{"fr":"deux"}}';
     };
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toHaveLength(1);
     expect(state.writes[0][0]).toBe("/target/two.json");
+    expect(JSON.parse(state.writes[0][1])).toEqual({
+      name: "two",
+      type: 1,
+      name_localizations: { fr: "deux" },
+    });
   });
 
   it("reports malformed manifests and still translates valid manifests", async () => {

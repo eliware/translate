@@ -47,7 +47,7 @@ export async function runCommandMode({
         const result = await translateLocaleDep({ locale: "", promptObj: commandPrompt, apiKey });
         let output;
         try {
-          output = formatCommandResponse(result);
+          output = formatCommandResponse(result, JSON.parse(raw));
         } catch {
           failed = true;
           writeError(`Invalid JSON response for command file ${name}\n`);

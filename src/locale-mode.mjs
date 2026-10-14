@@ -1,6 +1,7 @@
 import { injectLocaleJson } from "./prompts/locale-prompt.mjs";
 import { setTargetLocale } from "./prompts/target-locale.mjs";
 import pLimit from "./p-limit.mjs";
+import { isLocaleResponse } from "./locale-response.mjs";
 
 const MAX_CONCURRENT_TRANSLATIONS = 5;
 
@@ -17,11 +18,17 @@ export async function runLocaleMode({
   writeError,
 }) {
   const sourcePath = pathDep.join(cwd, "en-US.json");
-  let source, prompt;
+  let source, sourceData, prompt;
   try {
     source = await fsDep.readFile(sourcePath, "utf8");
   } catch {
     writeError("Failed to read en-US.json\n");
+    return 1;
+  }
+  try {
+    sourceData = JSON.parse(source);
+  } catch {
+    writeError("Failed to parse en-US.json\n");
     return 1;
   }
   try {
@@ -57,11 +64,9 @@ export async function runLocaleMode({
         try {
           const localePrompt = setTargetLocale(JSON.parse(JSON.stringify(prompt)), locale);
           const result = await translateLocaleDep({ locale, promptObj: localePrompt, apiKey });
-          try {
-            JSON.parse(result);
-          } catch {
+          if (!isLocaleResponse(sourceData, result)) {
             failed = true;
-            writeError(`Invalid JSON response for ${locale}\n`);
+            writeError(`Invalid locale JSON response for ${locale}\n`);
             progress.update(locale);
             return;
           }

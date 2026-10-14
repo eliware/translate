@@ -26,8 +26,7 @@ function setup({
     moduleDir: "/package/src",
     apiKey: "key",
     locales: ["fr"],
-    translateLocaleDep: async ({ promptObj }) =>
-      JSON.stringify({ text: promptObj.messages[0].content[0].text }),
+    translateLocaleDep: async () => '{"en":"Hello"}',
     createProgressBarDep: () => ({ update: (locale) => updates.push(locale) }),
     writeError: (message) => errors.push(message),
   };
@@ -44,7 +43,7 @@ describe("runLocaleMode", () => {
     await expect(runLocaleMode(state.deps)).resolves.toBe(0);
     expect(state.writes).toEqual(
       expect.arrayContaining([
-        ["/target/fr.json", JSON.stringify({ text: 'Translate {"en":"Hello"} to fr' })],
+        ["/target/fr.json", '{"en":"Hello"}'],
         ["/target/en-US.json", '{"en":"Hello"}'],
       ]),
     );
@@ -69,6 +68,10 @@ describe("runLocaleMode", () => {
     const promptParse = setup({ prompt: "not json" });
     await expect(runLocaleMode(promptParse.deps)).resolves.toBe(1);
     expect(promptParse.errors).toContain("Failed to parse prompt.json\n");
+
+    const sourceParse = setup({ source: "not JSON" });
+    await expect(runLocaleMode(sourceParse.deps)).resolves.toBe(1);
+    expect(sourceParse.errors).toContain("Failed to parse en-US.json\n");
   });
 
   it("rejects prompts without a usable content part", async () => {
@@ -104,7 +107,15 @@ describe("runLocaleMode", () => {
     state.deps.translateLocaleDep = async () => "plain output";
     await expect(runLocaleMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toEqual([]);
-    expect(state.errors).toContain("Invalid JSON response for fr\n");
+    expect(state.errors).toContain("Invalid locale JSON response for fr\n");
+  });
+
+  it("rejects locale responses with a different JSON structure", async () => {
+    const state = setup();
+    state.deps.translateLocaleDep = async () => '{"other":"Bonjour"}';
+    await expect(runLocaleMode(state.deps)).resolves.toBe(1);
+    expect(state.writes).toEqual([]);
+    expect(state.errors).toContain("Invalid locale JSON response for fr\n");
   });
 
   it("limits concurrent locale translations to five", async () => {
@@ -117,7 +128,7 @@ describe("runLocaleMode", () => {
       maximum = Math.max(maximum, active);
       await Promise.resolve();
       active -= 1;
-      return "{}";
+      return '{"en":"Hello"}';
     };
     await expect(runLocaleMode(state.deps)).resolves.toBe(0);
     expect(maximum).toBe(5);
