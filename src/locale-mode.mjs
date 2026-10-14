@@ -1,4 +1,5 @@
-import { injectLocaleJson, setTargetLocale } from "./prompt.mjs";
+import { injectLocaleJson } from "./locale-prompt.mjs";
+import { setTargetLocale } from "./prompt.mjs";
 
 export async function runLocaleMode({
   fsDep,

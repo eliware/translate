@@ -1,4 +1,4 @@
-import { injectCommandJson } from "./prompt.mjs";
+import { injectCommandJson } from "./command-prompt.mjs";
 
 export async function runCommandMode({
   fsDep,
