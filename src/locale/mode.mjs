@@ -1,7 +1,7 @@
-import { injectLocaleJson } from "./prompts/locale-prompt.mjs";
-import { setTargetLocale } from "./prompts/target-locale.mjs";
-import pLimit from "./p-limit.mjs";
-import { isLocaleResponse } from "./locale-response.mjs";
+import { injectLocaleJson } from "../prompts/locale-prompt.mjs";
+import { setTargetLocale } from "../prompts/target-locale.mjs";
+import pLimit from "../p-limit.mjs";
+import { isLocaleResponse } from "./response.mjs";
 
 const MAX_CONCURRENT_TRANSLATIONS = 5;
 
@@ -35,7 +35,7 @@ export async function runLocaleMode({
   }
   if (dryRun) {
     for (const locale of locales) {
-      if (locale !== "en-US") writeInfo(`Would translate ${locale}.json\n`);
+      if (locale !== "en-US") writeInfo(`Target file: ${locale}.json\n`);
     }
     return 0;
   }

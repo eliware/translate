@@ -18,7 +18,12 @@ Use native ESM. Add tests for behavior changes. Keep API keys and user locale da
 
 ## Validation
 
-Run `npm test`, `npm run lint`, `npm run audit`, `npm run format`, `npm run format:check`, and `npm run pack`.
+Run `npm test`.
+Run `npm run lint`.
+Run `npm run audit`.
+Run `npm run format`.
+Run `npm run format:check`.
+Run `npm run pack`.
 
 ## Security
 
@@ -30,7 +35,15 @@ Update release notes for user-visible changes. Do not publish, push, tag, or rel
 
 ## Application
 
-Locale mode reads `en-US.json` and `prompt.json`. Command mode reads JSON manifests and `prompt-commands.json`. Set `OPENAI_API_KEY` in `.env` at the installed package root.
+Locale mode reads `en-US.json` and `prompt.json`.
+Command mode reads JSON manifests and `prompt-commands.json`.
+Set `OPENAI_API_KEY` in `.env` at the installed package root.
+
+Run focused tests first during development.
+Run one test file with `npm test -- tests/path/to/example.test.mjs`.
+Run multiple test files with `npm test -- tests/path/to/first.test.mjs tests/path/to/second.test.mjs`.
+Prevent repeated full-suite runs during development.
+Run the full `npm test` suite for final validation before a commit, milestone, or release.
 
 ## CLI
 

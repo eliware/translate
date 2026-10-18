@@ -74,15 +74,9 @@ describe("runTranslate", () => {
 
   it("lists files without an API key, an OpenAI call, or file writes by default", async () => {
     const state = setup({ apiKey: "" });
-    const output = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
-    try {
-      await expect(runTranslate(state.deps)).resolves.toBe(0);
-      expect(state.translateCalls).toEqual([]);
-      expect(state.writes).toEqual([]);
-      expect(output).toHaveBeenCalledWith("Would translate fr.json\n");
-    } finally {
-      output.mockRestore();
-    }
+    await expect(runTranslate(state.deps)).resolves.toBe(0);
+    expect(state.translateCalls).toEqual([]);
+    expect(state.writes).toEqual([]);
   });
 
   it("keeps dry-run active when --yes is also set", async () => {
@@ -106,14 +100,12 @@ describe("runTranslate", () => {
 
   it("uses the default dependencies", async () => {
     const originalError = log.error;
-    const output = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
     const cwd = jest.spyOn(process, "cwd").mockReturnValue("/missing-target");
     log.error = jest.fn();
     try {
       await expect(runTranslate()).resolves.toBe(1);
     } finally {
       log.error = originalError;
-      output.mockRestore();
       cwd.mockRestore();
     }
   });

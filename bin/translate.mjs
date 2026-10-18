@@ -10,7 +10,10 @@ async function run(options) {
     shutdownHook: () => errorHandlers.removeHandlers(),
   });
   try {
-    return await runTranslate(options);
+    return await runTranslate({
+      ...options,
+      writeInfo: (message) => process.stdout.write(message),
+    });
   } catch (error) {
     log.error("Translation failed", { error });
     return 1;

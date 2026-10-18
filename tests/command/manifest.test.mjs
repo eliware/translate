@@ -1,4 +1,4 @@
-import { isCommandManifest } from "../src/command-manifest.mjs";
+import { isCommandManifest } from "../../src/command/manifest.mjs";
 
 describe("isCommandManifest", () => {
   it("accepts objects with a string name and numeric type", () => {

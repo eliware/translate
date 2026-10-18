@@ -1,6 +1,6 @@
-import { injectCommandJson, loadCommandPrompt } from "./prompts/command-prompt.mjs";
-import { findCommandFiles } from "./command-files.mjs";
-import { formatCommandResponse } from "./command-response.mjs";
+import { injectCommandJson, loadCommandPrompt } from "../prompts/command-prompt.mjs";
+import { findCommandFiles } from "./files.mjs";
+import { formatCommandResponse } from "./response.mjs";
 
 export async function runCommandMode({
   fsDep,
@@ -30,7 +30,7 @@ export async function runCommandMode({
     return 1;
   }
   if (dryRun) {
-    for (const { name } of files) writeInfo(`Would translate ${name}\n`);
+    for (const { name } of files) writeInfo(`Target file: ${name}\n`);
     return invalidFiles.length > 0 ? 1 : 0;
   }
   let prompt;

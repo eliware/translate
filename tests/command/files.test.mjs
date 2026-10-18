@@ -1,4 +1,4 @@
-import { findCommandFiles } from "../src/command-files.mjs";
+import { findCommandFiles } from "../../src/command/files.mjs";
 
 describe("findCommandFiles", () => {
   it("returns JSON files with command fields", async () => {

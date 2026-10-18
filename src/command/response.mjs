@@ -1,4 +1,4 @@
-import { locales } from "./locales.mjs";
+import { locales } from "../locales.mjs";
 
 const supportedLocales = new Set([...locales, "en-US"]);
 

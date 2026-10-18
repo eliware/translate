@@ -1,4 +1,4 @@
-import { formatCommandResponse } from "../src/command-response.mjs";
+import { formatCommandResponse } from "../../src/command/response.mjs";
 
 describe("formatCommandResponse", () => {
   it("preserves manifest fields and merges translated command localizations", () => {

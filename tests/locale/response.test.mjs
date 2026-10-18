@@ -1,4 +1,4 @@
-import { isLocaleResponse } from "../src/locale-response.mjs";
+import { isLocaleResponse } from "../../src/locale/response.mjs";
 
 describe("isLocaleResponse", () => {
   it("accepts translated strings with the same nested JSON structure", () => {

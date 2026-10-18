@@ -1,4 +1,4 @@
-import { runCommandMode } from "../src/command-mode.mjs";
+import { runCommandMode } from "../../src/command/mode.mjs";
 
 function setup({ names = ["one.json"], response = '{"ok":true}' } = {}) {
   const files = new Map([
@@ -51,7 +51,7 @@ describe("runCommandMode", () => {
     await expect(runCommandMode(state.deps)).resolves.toBe(0);
     expect(translateCalls).toBe(0);
     expect(state.writes).toEqual([]);
-    expect(messages).toEqual(["Would translate one.json\n"]);
+    expect(messages).toEqual(["Target file: one.json\n"]);
   });
 
   it("returns failure for invalid files during dry-run", async () => {

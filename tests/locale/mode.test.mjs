@@ -1,4 +1,4 @@
-import { runLocaleMode } from "../src/locale-mode.mjs";
+import { runLocaleMode } from "../../src/locale/mode.mjs";
 
 function setup({
   source = '{"en":"Hello"}',
@@ -64,7 +64,7 @@ describe("runLocaleMode", () => {
     await expect(runLocaleMode(state.deps)).resolves.toBe(0);
     expect(translateCalls).toBe(0);
     expect(state.writes).toEqual([]);
-    expect(messages).toEqual(["Would translate fr.json\n"]);
+    expect(messages).toEqual(["Target file: fr.json\n"]);
   });
 
   it("accepts the default output handler in dry-run mode", async () => {

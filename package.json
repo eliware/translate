@@ -1,6 +1,6 @@
 {
   "name": "@eliware/translate",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "type": "module",
   "description": "A tool for translating locale files for discord apps built on @eliware/discord",
   "keywords": [
@@ -47,7 +47,7 @@
   "dependencies": {
     "@eliware/common": "^12.0.1",
     "@eliware/openai": "^12.0.0",
-    "dotenv": "^18.0.7"
+    "dotenv": "^18.0.8"
   },
   "devDependencies": {
     "@eliware/test": "^12.0.0"

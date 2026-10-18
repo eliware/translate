@@ -5,8 +5,8 @@ import { loadRuntimeConfig } from "./config.mjs";
 import { translateLocale } from "./worker.mjs";
 import { createProgressBar } from "./progress.mjs";
 import { locales as supportedLocales } from "./locales.mjs";
-import { runLocaleMode } from "./locale-mode.mjs";
-import { runCommandMode } from "./command-mode.mjs";
+import { runLocaleMode } from "./locale/mode.mjs";
+import { runCommandMode } from "./command/mode.mjs";
 import { createErrorWriter } from "./cli-error.mjs";
 import { selectTranslationMode } from "./mode-selector.mjs";
 
@@ -23,7 +23,7 @@ export async function runTranslate({
   locales = supportedLocales,
   dryRun = false,
   yes = false,
-  writeInfo = (message) => process.stdout.write(message),
+  writeInfo = () => {},
 } = {}) {
   const previewOnly = dryRun || !yes;
   const writeError = createErrorWriter(logDep);

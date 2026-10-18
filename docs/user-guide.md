@@ -22,11 +22,11 @@ Or install the CLI in one project:
 npm install @eliware/translate
 ```
 
-Run `translate` from the target repository root after a global install. Run `npx translate` after a local install.
+Run `translate --yes` from the target repository root after a global install. Run `npx translate --yes` after a local install.
 
 ## Set the API key
 
-The CLI needs an `.env` file in the installed `@eliware/translate` package directory. Put this line in that file:
+The CLI uses an `.env` file in the installed `@eliware/translate` package directory. Add this line to that file:
 
 ```text
 OPENAI_API_KEY=your_openai_api_key_here
@@ -34,16 +34,19 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 For a local install, the package directory is `node_modules/@eliware/translate`. For a global install, run `npm root --global` to find the global module directory. Add `@eliware/translate` to that path.
 
-Keep the real key private. Do not commit the `.env` file. The CLI exits with code `1` if the file or key is absent.
+Keep the API key private. Do not commit the `.env` file. The CLI exits with code `1` if the file or key is missing.
 
 ## Translate locale files
 
-Put `en-US.json` in the target repository root. Run `translate` or `npx translate` from that directory. The CLI reads the source file and the bundled `prompt.json` file.
+Put `en-US.json` in the target repository root. Run `translate --yes` or `npx translate --yes` from that directory. The CLI reads the source file and the bundled `prompt.json` file.
 
-Run `translate --dry-run` to list target files. The CLI does not call OpenAI or write files in this mode. It does not need `.env` or an API key.
+Run `translate --dry-run` to list target files. The CLI does not call OpenAI or write files in this mode. This mode does not read `.env` or use an API key.
+
 Run `translate --yes` to call OpenAI and write translated files. The CLI can overwrite existing locale files.
-The CLI accepts only responses that keep the source JSON keys, arrays, and value types. It does not write a response with a different structure and returns `1`.
-The CLI processes up to five locale translations at a time.
+
+The CLI accepts only responses that keep the source JSON keys, arrays, and value types. It returns `1` and does not write a response with a different structure.
+
+The CLI runs a maximum of five locale translations at one time.
 
 Supported locales:
 
@@ -58,8 +61,12 @@ Use command mode when the target root has no `en-US.json` file. Put command mani
 The CLI scans only JSON files in the target root. It skips files that do not match the required fields. It reports files that it cannot read or parse, then continues with other manifests.
 The CLI reads the bundled `prompt-commands.json` file.
 
-The CLI keeps source fields and option structure. It updates command names, descriptions, and localization maps. It formats valid JSON output with two spaces. It does not write invalid JSON responses.
-Run `translate --dry-run` to list command files. The CLI does not call OpenAI or write files in this mode. It does not need `.env` or an API key.
+The CLI keeps source fields and option structure. It updates command names, descriptions, and localization maps.
+
+The CLI formats valid JSON output with two spaces. It does not write invalid JSON responses.
+
+Run `translate --dry-run` to list command files. The CLI does not call OpenAI or write files in this mode. This mode does not read `.env` or use an API key.
+
 Run `translate --yes` to call OpenAI and write translated command files. The CLI can overwrite existing command files.
 Command names and localized names must contain 1 to 32 characters. Description fields must contain 1 to 100 characters.
 
@@ -79,18 +86,22 @@ translate --version
 translate --yes
 ```
 
-The CLI returns `0` after a successful run. It returns `1` when setup fails, input is not usable, or a file fails. The CLI can continue with other files after a file fails. Review the CLI output and generated files after each run.
+The CLI returns `0` when a run completes without errors. It returns `1` when setup fails, input is not usable, or a file fails.
+
+The CLI can continue with other files after a file fails. Examine the CLI output and generated files after each run.
 
 ## Troubleshoot
 
-If the CLI reports a setup error, confirm that `.env` exists in the installed package directory. Confirm that it contains `OPENAI_API_KEY` with a valid key.
+If the CLI reports a setup error, check that `.env` exists in the installed package directory. Check that the file contains `OPENAI_API_KEY` with a valid key.
 
-If the CLI finds no input, run it from the target repository root. Add `en-US.json` for locale mode. Add valid command manifest JSON files for command mode.
+If the CLI finds no input, run it from the target repository root. Add `en-US.json` for locale mode.
 
-If a file does not change as expected, check its JSON syntax and required fields. Review the CLI output for a translation error.
+If the target has no `en-US.json` file, add valid command manifest JSON files for command mode.
 
-## Data and security
+If a file does not change as expected, check its JSON syntax and required fields. Examine the CLI output for a translation error.
 
-The CLI sends source JSON and prompts to OpenAI. Use only data that you can send to that service. OpenAI may charge for API use.
+## Data use
 
-Keep API keys out of source control. Review generated files before you share them.
+The CLI sends source JSON and prompts to OpenAI. Send only data that you can share with OpenAI. OpenAI may charge fees for API use.
+
+Keep API keys out of source control. Examine generated files before you share them.

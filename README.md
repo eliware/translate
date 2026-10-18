@@ -24,11 +24,11 @@ A tool for translating locale files for discord apps built on @eliware/discord
 
 ## Features
 
-Translate `en-US.json` into supported Discord locales. Translate command manifests in place.
+Translate `en-US.json` into supported Discord locales. Translate Discord command manifests.
 
 ## Requirements
 
-Use Node.js 26 or later. Get an OpenAI API key.
+Use Node.js 26 or later. Use an OpenAI API key.
 
 ## Setup
 
@@ -36,7 +36,7 @@ Install the package with `npm install @eliware/translate`. Create `.env` at the 
 
 ## Usage
 
-Run `translate` from the target repository root. Read the [user guide](docs/user-guide.md) for setup and workflow details. Read the [release notes](RELEASE_NOTES.md) for changes.
+Run `translate --yes` from the target repository root to translate files. Read the [user guide](docs/user-guide.md) for setup and use. Read the [release notes](RELEASE_NOTES.md) for changes.
 
 ## Development
 
@@ -52,7 +52,7 @@ Check `.env` and `OPENAI_API_KEY` when setup fails. Check the input JSON when th
 
 ## Security
 
-Keep API keys out of source control. The CLI sends source JSON to OpenAI. Review generated files before you share them.
+Keep API keys out of source control. The CLI sends source JSON to OpenAI. Examine generated files before you share them.
 
 ## Configuration
 
@@ -64,11 +64,12 @@ Run the CLI from the target repository root. The CLI writes files only when you 
 
 ## Commands
 
-Run `translate` or `translate --help` to read usage. Run `translate --dry-run` to list target files without API calls or file writes. Run `translate --yes` to send API requests and write translations. Run `translate --version` to show the package version.
+Run `translate` or `translate --help` to read the help text. Run `translate --dry-run` to list target files.
+Run `translate --yes` to send API requests and write translations. Run `translate --version` to show the package version.
 
 ## Exit codes
 
-The CLI returns `0` after a successful run. It returns `1` when setup or file processing fails.
+The CLI returns `0` when a run completes without errors. It returns `1` when setup or file processing fails.
 
 ## Support
 

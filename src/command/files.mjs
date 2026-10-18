@@ -1,4 +1,4 @@
-import { isCommandManifest } from "./command-manifest.mjs";
+import { isCommandManifest } from "./manifest.mjs";
 
 export async function findCommandFiles({ fsDep, pathDep, cwd }) {
   const names = (await fsDep.readdir(cwd)).filter((name) => name.endsWith(".json"));
