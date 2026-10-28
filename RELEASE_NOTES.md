@@ -1,16 +1,12 @@
 # Release Notes
 
-## 13.0.0 — 2026-10-17
-
-### Added
-
-- Add `translate --dry-run` to list target files without API calls or file writes.
+## 15.0.1 — 2026-10-28
 
 ### Changed
 
-- Require `translate --yes` before the CLI sends API requests or writes files.
-- Show help when users run `translate` without flags.
-- Update the package and dependency versions for convention 13.
+- Use `gpt-6-luna` for locale and command translations.
+- Set the package version to `15.0.1`.
+- Update dependencies to current releases.
 
 ## 12.0.0 — 2026-10-14
 
