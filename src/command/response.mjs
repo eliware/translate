@@ -6,26 +6,47 @@ function isRecord(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function hasTextLength(value, maximum) {
-  return typeof value === "string" && value.length > 0 && value.length <= maximum;
+function collectTextIssues(value, path, maximum, issues) {
+  if (typeof value !== "string") {
+    issues.push(`${path} must be text.`);
+    return;
+  }
+  if (value.length === 0) {
+    issues.push(`${path} must not be empty.`);
+    return;
+  }
+  if (value.length > maximum) issues.push(`${path} must have no more than ${maximum} characters.`);
 }
 
-function hasLocalizationLengths(value, maximum) {
-  return (
-    value === undefined ||
-    (isRecord(value) &&
-      Object.entries(value).every(
-        ([locale, text]) => supportedLocales.has(locale) && hasTextLength(text, maximum),
-      ))
+function collectLocalizationIssues(value, path, maximum, issues) {
+  if (value === undefined) return;
+  if (!isRecord(value)) {
+    issues.push(`${path} must be an object.`);
+    return;
+  }
+  for (const [locale, text] of Object.entries(value)) {
+    const localePath = `${path}.${locale}`;
+    if (!supportedLocales.has(locale)) issues.push(`${localePath} uses an unsupported locale.`);
+    collectTextIssues(text, localePath, maximum, issues);
+  }
+}
+
+function collectCommandIssues(command, path, isOption, issues) {
+  if (!isRecord(command)) {
+    issues.push(`${path} must be an object.`);
+    return;
+  }
+  collectTextIssues(command.name, `${path}.name`, 32, issues);
+  collectLocalizationIssues(command.name_localizations, `${path}.name_localizations`, 32, issues);
+  if (Object.hasOwn(command, "description")) {
+    collectTextIssues(command.description, `${path}.description`, 100, issues);
+  }
+  collectLocalizationIssues(
+    command.description_localizations,
+    `${path}.description_localizations`,
+    100,
+    issues,
   );
-}
-
-function hasValidCommandLengths(command, isOption = false) {
-  if (!isRecord(command) || !hasTextLength(command.name, 32)) return false;
-  if (!hasLocalizationLengths(command.name_localizations, 32)) return false;
-  if (Object.hasOwn(command, "description") && !hasTextLength(command.description, 100))
-    return false;
-  if (!hasLocalizationLengths(command.description_localizations, 100)) return false;
   if (
     !isOption &&
     command.type > 1 &&
@@ -33,13 +54,17 @@ function hasValidCommandLengths(command, isOption = false) {
       Object.hasOwn(command, "description_localizations") ||
       Object.hasOwn(command, "options"))
   ) {
-    return false;
+    issues.push(`${path} is a context command and cannot have descriptions or options.`);
   }
-  return (
-    command.options === undefined ||
-    (Array.isArray(command.options) &&
-      command.options.every((option) => hasValidCommandLengths(option, true)))
-  );
+  if (command.options !== undefined && !Array.isArray(command.options)) {
+    issues.push(`${path}.options must be an array.`);
+    return;
+  }
+  if (Array.isArray(command.options)) {
+    command.options.forEach((option, index) =>
+      collectCommandIssues(option, `${path}.options[${index}]`, true, issues),
+    );
+  }
 }
 
 function mergeLocalizations(source, translated) {
@@ -77,12 +102,19 @@ function mergeCommand(source, translated) {
 }
 
 export function formatCommandResponse(result, source) {
-  const translated = JSON.parse(result);
+  let translated;
+  try {
+    translated = JSON.parse(result);
+  } catch {
+    throw new TypeError("Model response is not valid JSON.");
+  }
   if (!isRecord(translated) || !isRecord(source))
     throw new TypeError("Command response must be an object");
   const output = mergeCommand(source, translated);
-  if (!hasValidCommandLengths(output)) {
-    throw new TypeError("Command response violates name or description length limits");
+  const issues = [];
+  collectCommandIssues(output, "command", false, issues);
+  if (issues.length > 0) {
+    throw new TypeError(`Command response failed validation: ${issues.join(" ")}`);
   }
   return JSON.stringify(output, null, 2);
 }

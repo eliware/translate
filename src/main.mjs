@@ -24,6 +24,9 @@ export async function runTranslate({
   dryRun = false,
   yes = false,
   writeInfo = () => {},
+  debug = false,
+  writeDebug = () => {},
+  commandFile,
 } = {}) {
   const previewOnly = dryRun || !yes;
   const writeError = createErrorWriter(logDep);
@@ -42,7 +45,7 @@ export async function runTranslate({
   }
   const { moduleDir, apiKey } = config;
   const cwd = processDep.cwd();
-  const mode = await selectTranslationMode({ fsDep, pathDep, cwd });
+  const mode = commandFile ? "command" : await selectTranslationMode({ fsDep, pathDep, cwd });
   if (mode === "command") {
     return runCommandMode({
       fsDep,
@@ -52,8 +55,11 @@ export async function runTranslate({
       apiKey,
       translateLocaleDep,
       writeError,
+      writeDebug,
       dryRun: previewOnly,
       writeInfo,
+      debug,
+      file: commandFile,
     });
   }
   return runLocaleMode({
@@ -69,5 +75,7 @@ export async function runTranslate({
     writeError,
     dryRun: previewOnly,
     writeInfo,
+    debug,
+    writeDebug,
   });
 }

@@ -70,6 +70,10 @@ Run `translate --dry-run` to list command files. The CLI does not call OpenAI or
 Run `translate --yes` to call OpenAI and write translated command files. The CLI can overwrite existing command files.
 Command names and localized names must contain 1 to 32 characters. Description fields must contain 1 to 100 characters.
 
+Use `translate --file lock.json --dry-run` to list one command file. Use `translate --file lock.json --yes` to translate that file.
+
+Add `--debug` to show the failed field and its cause when a command response fails.
+
 ## Commands and exit codes
 
 Run `translate` or `translate --help` to read usage. Run `translate --dry-run` to list target files.
@@ -84,6 +88,8 @@ Use these options to read help or version information:
 translate --help
 translate --version
 translate --yes
+translate --file lock.json --dry-run
+translate --file lock.json --yes --debug
 ```
 
 The CLI returns `0` when a run completes without errors. It returns `1` when setup fails, input is not usable, or a file fails.

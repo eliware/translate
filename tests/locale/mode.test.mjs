@@ -76,6 +76,7 @@ describe("runLocaleMode", () => {
 
   it("reports source and prompt read or parse errors", async () => {
     const sourceFail = setup();
+    sourceFail.deps.debug = true;
     sourceFail.deps.fsDep.readFile = async () => {
       throw Error("read failed");
     };

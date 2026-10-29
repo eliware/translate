@@ -5,6 +5,7 @@
 ### Changed
 
 - Use `gpt-6-luna` for locale and command translations.
+- Add `--file` to translate one command manifest and `--debug` to show validation details.
 - Set the package version to `15.0.1`.
 - Update dependencies to current releases.
 

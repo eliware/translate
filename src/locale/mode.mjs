@@ -2,6 +2,7 @@ import { injectLocaleJson } from "../prompts/locale-prompt.mjs";
 import { setTargetLocale } from "../prompts/target-locale.mjs";
 import pLimit from "../p-limit.mjs";
 import { isLocaleResponse } from "./response.mjs";
+import { writeDebugError } from "../cli-error.mjs";
 
 const MAX_CONCURRENT_TRANSLATIONS = 5;
 
@@ -18,19 +19,28 @@ export async function runLocaleMode({
   writeError,
   dryRun = false,
   writeInfo = () => {},
+  debug = false,
+  writeDebug = () => {},
 }) {
   const sourcePath = pathDep.join(cwd, "en-US.json");
   let source, sourceData, prompt;
   try {
     source = await fsDep.readFile(sourcePath, "utf8");
-  } catch {
+  } catch (error) {
     writeError("Failed to read en-US.json\n");
+    writeDebugError({ debug, writeDebug, context: "en-US.json", error });
     return 1;
   }
   try {
     sourceData = JSON.parse(source);
   } catch {
     writeError("Failed to parse en-US.json\n");
+    writeDebugError({
+      debug,
+      writeDebug,
+      context: "en-US.json",
+      error: new Error("File is not valid JSON"),
+    });
     return 1;
   }
   if (dryRun) {
@@ -47,10 +57,17 @@ export async function runLocaleMode({
         ? "Failed to parse prompt.json\n"
         : "Failed to read prompt.json\n",
     );
+    writeDebugError({ debug, writeDebug, context: "prompt.json", error });
     return 1;
   }
   if (!injectLocaleJson(prompt, source)) {
     writeError("Invalid prompt.json structure\n");
+    writeDebugError({
+      debug,
+      writeDebug,
+      context: "prompt.json",
+      error: new Error("Prompt has no usable text part"),
+    });
     return 1;
   }
   const progress = createProgressBarDep(locales.length, processDep.stdout);
@@ -62,9 +79,10 @@ export async function runLocaleMode({
         if (locale === "en-US") {
           try {
             await fsDep.writeFile(sourcePath, source);
-          } catch {
+          } catch (error) {
             failed = true;
             writeError("Failed to write en-US.json\n");
+            writeDebugError({ debug, writeDebug, context: "en-US.json", error });
           }
           progress.update(locale);
           return;
@@ -75,13 +93,20 @@ export async function runLocaleMode({
           if (!isLocaleResponse(sourceData, result)) {
             failed = true;
             writeError(`Invalid locale JSON response for ${locale}\n`);
+            writeDebugError({
+              debug,
+              writeDebug,
+              context: `${locale}.json`,
+              error: new Error("Response does not match the source JSON structure"),
+            });
             progress.update(locale);
             return;
           }
           await fsDep.writeFile(pathDep.join(cwd, `${locale}.json`), result);
-        } catch {
+        } catch (error) {
           failed = true;
           writeError(`Failed to translate ${locale}\n`);
+          writeDebugError({ debug, writeDebug, context: `${locale}.json`, error });
         }
         progress.update(locale);
       }),

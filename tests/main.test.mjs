@@ -34,7 +34,10 @@ function setup({ localeMode = true, envExists = true, apiKey = "key" } = {}) {
   return {
     deps: {
       fsDep,
-      pathDep: { join: (...parts) => parts.join("/") },
+      pathDep: {
+        join: (...parts) => parts.join("/"),
+        resolve: (base, file) => `${base}/${file}`,
+      },
       processDep,
       dotenvConfigDep: (options) => dotenvCalls.push(options),
       translateLocaleDep: async (input) => {
@@ -70,6 +73,35 @@ describe("runTranslate", () => {
     expect(state.writes).toEqual([
       ["/target/command.json", '{\n  "name": "hello",\n  "type": 1\n}', "utf8"],
     ]);
+  });
+
+  it("uses command mode for one selected file", async () => {
+    const state = setup();
+    state.deps.fsDep.readdir = async () => {
+      throw Error("directory scan must not run");
+    };
+    await expect(
+      runTranslate({ ...state.deps, yes: true, commandFile: "command.json" }),
+    ).resolves.toBe(0);
+    expect(state.translateCalls).toHaveLength(1);
+    expect(state.writes).toEqual([
+      ["/target/command.json", '{\n  "name": "hello",\n  "type": 1\n}', "utf8"],
+    ]);
+  });
+
+  it("uses the default debug output handler for selected command files", async () => {
+    const state = setup();
+    state.deps.translateLocaleDep = async () =>
+      JSON.stringify({
+        name: "hello",
+        type: 1,
+        description_localizations: { fr: "d".repeat(101) },
+      });
+    await expect(
+      runTranslate({ ...state.deps, yes: true, debug: true, commandFile: "command.json" }),
+    ).resolves.toBe(1);
+    expect(state.errors).toContain("Invalid command response for command file command.json");
+    expect(state.writes).toEqual([]);
   });
 
   it("lists files without an API key, an OpenAI call, or file writes by default", async () => {

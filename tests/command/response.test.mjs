@@ -70,10 +70,10 @@ describe("formatCommandResponse", () => {
         type: 2,
         description_localizations: "invalid",
       }),
-    ).toThrow("Command response violates name or description length limits");
+    ).toThrow("Command response failed validation");
     expect(() =>
       formatCommandResponse(response, { name: "hello", type: 2, description: "invalid" }),
-    ).toThrow("Command response violates name or description length limits");
+    ).toThrow("Command response failed validation");
   });
 
   it("rejects names and descriptions that exceed Discord limits", () => {
@@ -81,10 +81,10 @@ describe("formatCommandResponse", () => {
     const longName = { name: "hello", name_localizations: { fr: "n".repeat(33) } };
     const longDescription = { name: "hello", description: "d".repeat(101) };
     expect(() => formatCommandResponse(JSON.stringify(longName), source)).toThrow(
-      "Command response violates name or description length limits",
+      "Command response failed validation",
     );
     expect(() => formatCommandResponse(JSON.stringify(longDescription), source)).toThrow(
-      "Command response violates name or description length limits",
+      "Command response failed validation",
     );
   });
 
@@ -94,7 +94,7 @@ describe("formatCommandResponse", () => {
         name: "hello",
         type: 1,
       }),
-    ).toThrow("Command response violates name or description length limits");
+    ).toThrow("Command response failed validation");
   });
 
   it("rejects descriptions and options on context commands", () => {
@@ -104,10 +104,10 @@ describe("formatCommandResponse", () => {
         type: 2,
         options: [{ name: "user", type: 3 }],
       }),
-    ).toThrow("Command response violates name or description length limits");
+    ).toThrow("Command response failed validation");
     expect(() =>
       formatCommandResponse('{"name":"hello"}', { name: "hello", type: 2, options: [] }),
-    ).toThrow("Command response violates name or description length limits");
+    ).toThrow("Command response failed validation");
   });
 
   it("keeps valid command groups with descriptions inside chat commands", () => {
@@ -117,5 +117,28 @@ describe("formatCommandResponse", () => {
       options: [{ name: "group", description: "Group", type: 2 }],
     };
     expect(JSON.parse(formatCommandResponse('{"name":"hello"}', source))).toEqual(source);
+  });
+
+  it("reports the localization field and character limit that failed", () => {
+    const source = { name: "hello", description: "Greeting", type: 1 };
+    const response = JSON.stringify({
+      name: "hello",
+      description_localizations: { fr: "d".repeat(101) },
+    });
+    expect(() => formatCommandResponse(response, source)).toThrow(
+      "command.description_localizations.fr must have no more than 100 characters",
+    );
+  });
+
+  it("reports text and option shape failures", () => {
+    expect(() => formatCommandResponse("{}", { name: 42, type: 1 })).toThrow(
+      "command.name must be text",
+    );
+    expect(() => formatCommandResponse('{"name":""}', { name: "hello", type: 1 })).toThrow(
+      "command.name must not be empty",
+    );
+    expect(() =>
+      formatCommandResponse("{}", { name: "hello", type: 1, options: "invalid" }),
+    ).toThrow("command.options must be an array");
   });
 });

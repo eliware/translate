@@ -66,6 +66,7 @@ Run the CLI from the target repository root. The CLI writes files only when you 
 
 Run `translate` or `translate --help` to read the help text. Run `translate --dry-run` to list target files.
 Run `translate --yes` to send API requests and write translations. Run `translate --version` to show the package version.
+Run `translate --file lock.json --dry-run` to list one command manifest. Add `--debug` to show error details.
 
 ## Exit codes
 

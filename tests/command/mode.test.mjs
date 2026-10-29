@@ -18,7 +18,10 @@ function setup({ names = ["one.json"], response = '{"ok":true}' } = {}) {
       },
       writeFile: async (...args) => writes.push(args),
     },
-    pathDep: { join: (...parts) => parts.join("/") },
+    pathDep: {
+      join: (...parts) => parts.join("/"),
+      resolve: (base, file) => `${base}/${file}`,
+    },
     cwd: "/target",
     moduleDir: "/package/src",
     apiKey: "key",
@@ -36,6 +39,25 @@ describe("runCommandMode", () => {
       ["/target/one.json", '{\n  "name": "one",\n  "type": 1\n}', "utf8"],
     ]);
     expect(state.errors).toEqual([]);
+  });
+
+  it("translates one selected manifest without reading the other files", async () => {
+    const state = setup({ names: ["one.json", "two.json"] });
+    state.files.set("two.json", '{"name":"two","type":1}');
+    const readPaths = [];
+    const readFile = state.deps.fsDep.readFile;
+    state.deps.fsDep.readdir = async () => {
+      throw Error("directory scan must not run");
+    };
+    state.deps.fsDep.readFile = async (path, encoding) => {
+      readPaths.push(path);
+      return readFile(path, encoding);
+    };
+    await expect(runCommandMode({ ...state.deps, file: "one.json" })).resolves.toBe(0);
+    expect(readPaths.filter((path) => path.startsWith("/target/"))).toEqual(["/target/one.json"]);
+    expect(state.writes).toEqual([
+      ["/target/one.json", '{\n  "name": "one",\n  "type": 1\n}', "utf8"],
+    ]);
   });
 
   it("lists command targets without API calls or file writes in dry-run mode", async () => {
@@ -74,6 +96,7 @@ describe("runCommandMode", () => {
     unreadable.deps.fsDep.readdir = async () => {
       throw Error("directory error");
     };
+    unreadable.deps.debug = true;
     await expect(runCommandMode(unreadable.deps)).resolves.toBe(1);
 
     const empty = setup({ names: [] });
@@ -92,6 +115,16 @@ describe("runCommandMode", () => {
     };
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.errors).toContain("Failed to read or parse prompt-commands.json\n");
+
+    const debugState = setup();
+    debugState.deps.debug = true;
+    debugState.deps.writeDebug = (message) => debugState.errors.push(message);
+    debugState.deps.fsDep.readFile = async (path) => {
+      if (String(path).endsWith("prompt-commands.json")) throw Error("prompt missing");
+      return '{"name":"one","type":1}';
+    };
+    await expect(runCommandMode(debugState.deps)).resolves.toBe(1);
+    expect(debugState.errors).toContain("Debug prompt-commands.json: prompt missing\n");
   });
 
   it("reports failed prompt injection and translation", async () => {
@@ -101,11 +134,15 @@ describe("runCommandMode", () => {
     expect(noInject.errors).toContain("Could not inject command JSON into prompt for one.json\n");
 
     const translateFail = setup();
+    const debugMessages = [];
+    translateFail.deps.debug = true;
+    translateFail.deps.writeDebug = (message) => debugMessages.push(message);
     translateFail.deps.translateLocaleDep = async () => {
       throw Error("translation failed");
     };
     await expect(runCommandMode(translateFail.deps)).resolves.toBe(1);
     expect(translateFail.errors).toContain("Failed to translate command file one.json\n");
+    expect(debugMessages).toContain("Debug one.json: translation failed\n");
   });
 
   it("continues with other manifests after one translation fails", async () => {
@@ -129,9 +166,13 @@ describe("runCommandMode", () => {
 
   it("reports malformed manifests and still translates valid manifests", async () => {
     const state = setup({ names: ["one.json", "bad.json"] });
+    const debugMessages = [];
+    state.deps.debug = true;
+    state.deps.writeDebug = (message) => debugMessages.push(message);
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toHaveLength(1);
     expect(state.errors).toContain("Could not read or parse JSON file bad.json\n");
+    expect(debugMessages).toContain("Debug bad.json: File is not valid JSON\n");
   });
 
   it("does not write a command response with an overlong localized name", async () => {
@@ -144,5 +185,26 @@ describe("runCommandMode", () => {
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toEqual([]);
     expect(state.errors).toContain("Invalid command response for command file one.json\n");
+  });
+
+  it("shows the failed field and reason in debug mode", async () => {
+    const response = JSON.stringify({
+      name: "one",
+      type: 1,
+      description_localizations: { fr: "d".repeat(101) },
+    });
+    const state = setup({ response });
+    const debugMessages = [];
+    await expect(
+      runCommandMode({
+        ...state.deps,
+        debug: true,
+        writeDebug: (message) => debugMessages.push(message),
+      }),
+    ).resolves.toBe(1);
+    expect(state.errors).toContain("Invalid command response for command file one.json\n");
+    expect(debugMessages).toContain(
+      "Debug one.json: Command response failed validation: command.description_localizations.fr must have no more than 100 characters.\n",
+    );
   });
 });
