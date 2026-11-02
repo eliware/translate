@@ -4,20 +4,25 @@
 
 ### Added
 
-- Add command manifest translation, single-file selection with `--file`, and `--debug` validation details.
+- Add `--file` to translate one command manifest.
+- Add `--debug` to show validation details and error causes.
 - Add a user guide for installation, configuration, and translation.
 
 ### Changed
 
 - Use `gpt-6-luna` for locale and command translations.
 - Validate translation responses before file writes and preserve command fields and option structure.
-- Update dependencies. Upgrade `@eliware/test` to `15.1.0`.
-- Align CI and deployment workflows with current repository conventions.
+- Set the package version to `15.1.0`.
+- Upgrade npm dependencies. Set `@eliware/test` to `15.1.0`.
+- Update CI and deployment workflows.
 
 ## 12.0.0 — 2026-10-14
 
 ### Added
 
+- Add `translate --dry-run` to list target files without API calls or file writes.
+- Require `translate --yes` before the CLI sends API requests or writes files.
+- Show help when users run `translate` without flags.
 - Add `translate --help` and `translate --version`.
 - Add command mode for Discord application command manifests.
 - Add a user guide for setup, use, configuration, and error handling.
