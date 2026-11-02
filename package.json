@@ -1,6 +1,6 @@
 {
   "name": "@eliware/translate",
-  "version": "15.0.1",
+  "version": "15.1.0",
   "type": "module",
   "description": "A tool for translating locale files for discord apps built on @eliware/discord",
   "keywords": [
@@ -50,7 +50,7 @@
     "dotenv": "^18.0.9"
   },
   "devDependencies": {
-    "@eliware/test": "^15.0.1"
+    "@eliware/test": "^15.1.0"
   },
   "jest": {
     "testEnvironment": "node",

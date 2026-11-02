@@ -6,38 +6,34 @@ Maintain `@eliware/translate` as a Node.js 26 native ESM CLI.
 
 ## Scope and boundaries
 
-Translate Discord locale files and command manifests. Run the CLI from the target repository root.
+Translate Discord locale JSON files and application command manifests in a target repository.
 
 ## Layout
 
-Keep source modules in `src/`. Keep the CLI in `bin/`. Keep tests in `tests/` and fixtures in `test-fixtures/`.
+Keep launchers in `bin/`, implementation in `src/`, tests in `tests/`, and fixtures in `test-fixtures/`.
 
 ## Development
 
-Use native ESM. Add tests for behavior changes. Keep API keys and user locale data out of source control.
+Add tests for behavior changes. Keep each module focused. Keep credentials and private user data out of Git.
 
 ## Validation
 
-Run `npm test`.
-Run `npm run lint`.
-Run `npm run audit`.
-Run `npm run format`.
-Run `npm run format:check`.
-Run `npm run pack`.
+Use Node.js 26 and native ESM.
+Run `npm test` for aggregate validation.
+Run `npm run lint` for lint checks.
+Run `npm run audit` for dependency checks.
+Run `npm run format` to format files.
+Run `npm run format:check` to check formatting.
 
 ## Security
 
-The CLI sends input JSON to OpenAI. Keep secrets and private data out of source files.
+Send only data that you can share with OpenAI. Keep API keys out of source control.
 
 ## Changes
 
-Update release notes for user-visible changes. Do not publish, push, tag, or release without approval.
+Update `RELEASE_NOTES.md` for user-visible changes. Follow the approved process before publication.
 
 ## Application
-
-Locale mode reads `en-US.json` and `prompt.json`.
-Command mode reads JSON manifests and `prompt-commands.json`.
-Set `OPENAI_API_KEY` in `.env` at the installed package root.
 
 Run focused tests first during development.
 Run one test file with `npm test -- tests/path/to/example.test.mjs`.
@@ -47,8 +43,8 @@ Run the full `npm test` suite for final validation before a commit, milestone, o
 
 ## CLI
 
-Use `translate --help` for usage. Use `translate --version` for the package version. Exit code `0` means success. Exit code `1` means setup or processing failure.
+Keep `--help` and `--version` read-only. Document options and exit codes in the user guide.
 
 ## npm publication
 
-Run `npm run pack` before publication. Follow Eliware Operations approval before publication.
+Use `.github/workflows/npm.yaml` for publication. Follow Eliware Operations approval before publishing.

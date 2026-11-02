@@ -1,13 +1,18 @@
 # Release Notes
 
-## 15.0.1 — 2026-10-28
+## 15.1.0 — 2026-11-02
+
+### Added
+
+- Add command manifest translation, single-file selection with `--file`, and `--debug` validation details.
+- Add a user guide for installation, configuration, and translation.
 
 ### Changed
 
 - Use `gpt-6-luna` for locale and command translations.
-- Add `--file` to translate one command manifest and `--debug` to show validation details.
-- Set the package version to `15.0.1`.
-- Update dependencies to current releases.
+- Validate translation responses before file writes and preserve command fields and option structure.
+- Update dependencies. Upgrade `@eliware/test` to `15.1.0`.
+- Align CI and deployment workflows with current repository conventions.
 
 ## 12.0.0 — 2026-10-14
 
