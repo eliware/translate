@@ -30,6 +30,20 @@ describe("mergeCommandOptions", () => {
     });
   });
 
+  it("merges description localizations on nested options", () => {
+    const source = {
+      name: "hello",
+      options: [{ name: "user", description: "User", type: 3 }],
+    };
+    const translated = {
+      name: "salut",
+      options: [{ description_localizations: { fr: "Utilisateur" } }],
+    };
+    expect(mergeCommandOptions(source, translated).options[0].description_localizations).toEqual({
+      fr: "Utilisateur",
+    });
+  });
+
   it("keeps source options when translated options are missing", () => {
     const source = { name: "hello", options: [{ name: "user", type: 3 }] };
     expect(mergeCommandOptions(source, { name: "salut" })).toEqual({

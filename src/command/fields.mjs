@@ -1,7 +1,7 @@
 import { isRecord } from "./record.mjs";
 import { mergeLocalizations } from "./localizations.mjs";
 
-export function mergeCommandFields(source, translated) {
+export function mergeCommandFields(source, translated, allowDescriptionLocalizations = true) {
   if (!isRecord(source)) return source;
   const output = { ...source };
   for (const key of ["name", "description"]) {
@@ -10,7 +10,10 @@ export function mergeCommandFields(source, translated) {
     }
   }
   for (const key of ["name_localizations", "description_localizations"]) {
-    if (isRecord(translated[key]) && !(key === "description_localizations" && source.type > 1)) {
+    if (
+      isRecord(translated[key]) &&
+      (key !== "description_localizations" || allowDescriptionLocalizations)
+    ) {
       output[key] = mergeLocalizations(source[key], translated[key]);
     }
   }

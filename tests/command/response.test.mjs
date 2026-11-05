@@ -49,6 +49,14 @@ describe("formatCommandResponse", () => {
     expect(JSON.parse(result)).toEqual(source);
   });
 
+  it("keeps translated description localizations for primary entry point commands", () => {
+    const result = formatCommandResponse(
+      '{"name":"hello","description_localizations":{"fr":"salut"}}',
+      { name: "hello", description: "Open app", type: 4 },
+    );
+    expect(JSON.parse(result).description_localizations).toEqual({ fr: "salut" });
+  });
+
   it("rejects a merged response that fails command validation", () => {
     expect(() =>
       formatCommandResponse('{"name":"hello"}', { name: "hello", type: 2, options: [] }),
