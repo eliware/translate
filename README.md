@@ -24,20 +24,19 @@ A tool for translating locale files for discord apps built on @eliware/discord
 
 ## Features
 
-Translate Discord locale JSON files or Discord application command manifests with OpenAI.
+Translate Discord locale JSON files or application command manifests with OpenAI.
 
 ## Requirements
 
-Use Node.js 26 or later. Create an OpenAI API key before translation.
+Use Node.js 26 or later. Create an OpenAI API key before a write run.
 
 ## Setup
 
-Install `@eliware/translate` globally with `npm install --global @eliware/translate` or locally with `npm install @eliware/translate`.
-Create `.env` in the installed package directory. Set `OPENAI_API_KEY` in that file.
+Install `@eliware/translate` globally with `npm install --global @eliware/translate` or locally with `npm install @eliware/translate`. Set `OPENAI_API_KEY` in an `.env` file in the installed package root.
 
 ## Usage
 
-Run the CLI from the target repository root. Read the [user guide](docs/user-guide.md) for setup, modes, and options. Read [release notes](RELEASE_NOTES.md) for package changes.
+Run the CLI from the target repository root. Read the [user guide](docs/user-guide.md) for setup, modes, options, and file changes. Read [release notes](RELEASE_NOTES.md) for package changes.
 
 ## Development
 
@@ -49,28 +48,30 @@ Run `npm test` for aggregate validation.
 
 ## Troubleshooting
 
-Use `--debug` to show error details. Check the input JSON and package `.env` file when a run fails.
+Use `--debug` to show error details. Check the input JSON and the installed package `.env` file when a write run fails.
 
 ## Security
 
-The CLI sends source JSON and prompts to OpenAI. Keep secrets and data that you cannot share out of source files.
+The CLI sends source JSON and prompt text to OpenAI. Send only data that you can share with OpenAI. Keep API keys out of source control.
 
 ## Configuration
 
-Locale mode reads `en-US.json` and the package prompt `prompt.json`. Command mode reads command manifests and `prompt-commands.json`.
+Write runs require `OPENAI_API_KEY` and an `.env` file in the installed package root. A preview does not read `.env` or require the API key. Locale mode reads `prompt.json`. Command mode reads `prompt-commands.json`.
 
 ## Operations
 
-The CLI previews targets when you omit `--yes`. Use `--dry-run` to request a preview. Use `--yes` to send requests and write translation files. A write run can overwrite target files.
+Run `translate --dry-run` before a write run. Add `--yes` to send requests and write files. Locale mode writes translated locale files and leaves `en-US.json` unchanged. Command mode overwrites valid command manifests, or only the manifest selected with `--file`. The CLI does not write files when you add `--dry-run`.
 
 ## Commands
 
-Run `translate --help` to show usage. Run `translate --version` to show the installed package version. Run the CLI without arguments to show help.
-Use `--file <path>` to select one command manifest. Add `--debug` to show error details.
+Run `translate --help` to show usage. Run `translate --version` to show the installed package version. Run `translate` without arguments to show help. The CLI has no subcommands or pass-through arguments. No delimiter is required.
 
 ## Exit codes
 
-The CLI returns `0` when the run succeeds. It returns `1` when setup, input, translation, or file processing fails.
+| Code | Meaning                                               |
+| ---- | ----------------------------------------------------- |
+| `0`  | The command completed successfully.                   |
+| `1`  | Setup, input, translation, or file processing failed. |
 
 ## Support
 

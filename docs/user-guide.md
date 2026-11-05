@@ -1,6 +1,6 @@
 # User guide
 
-`@eliware/translate` translates Discord locale JSON files and application command manifests. A command manifest is a JSON file that defines one Discord command. The CLI sends source JSON and prompts to OpenAI.
+`@eliware/translate` translates Discord locale JSON files and application command manifests. A locale is a language or region code such as `en-US`. A command manifest is a JSON file that defines one Discord command. The CLI sends source JSON and prompts to OpenAI.
 
 ## Requirements
 
@@ -36,6 +36,8 @@ Add this line to `.env`:
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
+`OPENAI_API_KEY` has no default value. Write runs require a valid key.
+
 You can copy `.env.example` as a starting point. Keep `.env` private. Do not commit it.
 
 The CLI also requires the `.env` file when `OPENAI_API_KEY` is set in the process environment. A preview run does not read `.env` or require an API key.
@@ -43,6 +45,10 @@ The CLI also requires the `.env` file when `OPENAI_API_KEY` is set in the proces
 ## Run modes
 
 The CLI shows help when you run it without arguments or with `--help` alone. Use `--version` alone to show the installed package version. These options do not read project files or contact OpenAI.
+
+The CLI has no subcommands or pass-through arguments. No delimiter is required.
+
+The executable registers process error and shutdown handlers for each run. It removes the handlers when the run ends. A supported shutdown signal runs cleanup before the process exits.
 
 If the current directory contains `en-US.json`, the CLI uses locale mode. If it does not, the CLI uses command mode. Use `--file <path>` to select one command manifest and force command mode.
 
@@ -64,7 +70,7 @@ Then run the translation:
 npx translate --yes
 ```
 
-Locale mode reads `en-US.json` from the current directory. It reads the package prompt from `prompt.json`. It writes one file for each supported locale. It writes `en-GB.json`, but not the source file `en-US.json`.
+Locale mode reads `en-US.json` from the current directory. It reads the package prompt from `prompt.json`. It writes one file for each supported locale. It does not change the source file `en-US.json`.
 
 The prompt uses model `gpt-6-luna`. The CLI runs five locale requests at most at one time. It checks each response against the source JSON keys, value types, and array lengths before it writes the response.
 
@@ -76,7 +82,7 @@ Keep the source JSON valid. Preserve the keys and value types that your applicat
 
 ## Translate command manifests
 
-Put command manifest JSON files in the target repository root. The CLI scans only that directory. A command manifest must have a string `name` and numeric `type` at the top level.
+Put command manifest JSON files in the target repository root. The CLI scans only that directory and does not scan subdirectories. A command manifest must have a string `name` and numeric `type` at the top level.
 
 The CLI reads the package prompt from `prompt-commands.json`. It translates the command name, description, and localization maps. It keeps other source fields and option structure. It writes valid output to the selected manifest file.
 
@@ -95,9 +101,9 @@ npx translate --file lock.json --yes
 
 The file path can be relative to the current directory or absolute. The file must use the `.json` extension. It must contain a command manifest.
 
-The CLI checks command names and localized names for nonempty text and a maximum of 32 characters. It checks descriptions and localized descriptions for nonempty text and a maximum of 100 characters. It checks localization keys against the supported locale list. It also checks command option objects and context command restrictions.
+The CLI checks command names and localized names for nonempty text and a maximum of 32 characters. It checks descriptions and localized descriptions for nonempty text and a maximum of 100 characters. Command localization keys can use any locale listed above or `en-US`. The CLI also checks command option objects and context command restrictions.
 
-The CLI overwrites the selected manifest after a valid response. Save a copy of important files before a write run.
+The CLI overwrites each valid manifest after a valid response. If one file fails, the CLI can continue with other files. It returns exit code `1` if any file fails. Save a copy of important files before a write run.
 
 ## Debug errors
 
@@ -121,6 +127,8 @@ The CLI can continue with other files after one file fails. A run returns exit c
 | `--debug`       | Show error details on standard error.             |
 
 Processing options can appear in any order. Use `--help` or `--version` alone. The CLI returns `0` when all selected files complete. It returns `1` when setup, input, translation, or file processing fails.
+
+The CLI has no child commands or pass-through arguments. No delimiter is required.
 
 ## Package contents and releases
 

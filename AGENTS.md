@@ -6,7 +6,7 @@ Maintain `@eliware/translate` as a Node.js 26 native ESM CLI.
 
 ## Scope and boundaries
 
-Translate Discord locale JSON files and application command manifests in a target repository.
+Keep repository requirements in `specs/directives.yaml`.
 
 ## Layout
 
@@ -14,11 +14,11 @@ Keep launchers in `bin/`, implementation in `src/`, tests in `tests/`, and fixtu
 
 ## Development
 
-Add tests for behavior changes. Keep each module focused. Keep credentials and private user data out of Git.
+Keep each source and test module focused.
 
 ## Validation
 
-Use Node.js 26 and native ESM.
+Use Node.js 26 or later and native ESM for maintained JavaScript modules.
 Run `npm test` for aggregate validation.
 Run `npm run lint` for lint checks.
 Run `npm run audit` for dependency checks.
@@ -27,11 +27,11 @@ Run `npm run format:check` to check formatting.
 
 ## Security
 
-Send only data that you can share with OpenAI. Keep API keys out of source control.
+Keep credentials, private user data, and runtime state out of Git.
 
 ## Changes
 
-Update `RELEASE_NOTES.md` for user-visible changes. Follow the approved process before publication.
+Update `RELEASE_NOTES.md` for user-visible changes.
 
 ## Application
 
@@ -43,8 +43,10 @@ Run the full `npm test` suite for final validation before a commit, milestone, o
 
 ## CLI
 
-Keep `--help` and `--version` read-only. Document options and exit codes in the user guide.
+Keep `--help` and `--version` read-only.
+Document each command, argument, default, error, and exit code.
 
 ## npm publication
 
-Use `.github/workflows/npm.yaml` for publication. Follow Eliware Operations approval before publishing.
+Use `.github/workflows/npm.yaml` for package publication.
+Follow the approved release process before you publish.
