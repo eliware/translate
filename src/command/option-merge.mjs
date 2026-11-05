@@ -1,4 +1,4 @@
-import { isRecord } from "./text-validation.mjs";
+import { isRecord } from "./text/checks.mjs";
 import { mergeCommandFields } from "./merge.mjs";
 
 export function mergeCommandOptions(source, translated) {

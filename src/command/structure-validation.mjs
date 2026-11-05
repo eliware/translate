@@ -1,4 +1,4 @@
-import { isRecord } from "./text-validation.mjs";
+import { isRecord } from "./text/checks.mjs";
 
 function collectCommandStructureIssues(command, path, issues) {
   if (!isRecord(command)) {

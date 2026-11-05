@@ -1,4 +1,4 @@
-import { isRecord } from "./text-validation.mjs";
+import { isRecord } from "./text/checks.mjs";
 
 export function mergeLocalizations(source, translated) {
   const localizations = isRecord(source) ? source : {};

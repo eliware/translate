@@ -1,5 +1,5 @@
 import { mergeCommandOptions } from "./option-merge.mjs";
-import { isRecord } from "./text-validation.mjs";
+import { isRecord } from "./text/checks.mjs";
 import { validateCommand } from "./validation.mjs";
 
 export function formatCommandResponse(result, source) {
