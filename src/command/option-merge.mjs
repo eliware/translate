@@ -1,5 +1,5 @@
-import { isRecord } from "./text/checks.mjs";
-import { mergeCommandFields } from "./merge.mjs";
+import { isRecord } from "./record.mjs";
+import { mergeCommandFields } from "./fields.mjs";
 
 export function mergeCommandOptions(source, translated) {
   if (!isRecord(source)) return source;

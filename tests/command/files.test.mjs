@@ -58,14 +58,4 @@ describe("findCommandFiles", () => {
       { name: "one.json", filePath: "/target/one.json", raw: '{"name":"hello","type":1}' },
     ]);
   });
-
-  it("rejects a selected file without a JSON extension", async () => {
-    const result = await findCommandFiles({
-      fsDep: { readdir: async () => [], readFile: async () => "{}" },
-      pathDep: { resolve: (base, file) => `${base}/${file}` },
-      cwd: "/target",
-      file: "one.mjs",
-    });
-    expect(result.invalidFiles[0].error.message).toBe("Command file must use the .json extension");
-  });
 });

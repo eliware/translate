@@ -1,4 +1,4 @@
-import { isRecord } from "./text/checks.mjs";
+import { isRecord } from "./record.mjs";
 
 export function validateContextCommand(command) {
   if (

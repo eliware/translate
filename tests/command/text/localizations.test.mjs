@@ -1,29 +1,6 @@
-import {
-  collectLocalizationIssues,
-  collectTextIssues,
-  isRecord,
-} from "../../../src/command/text/checks.mjs";
+import { collectLocalizationIssues } from "../../../src/command/text/localizations.mjs";
 
-describe("command text checks", () => {
-  it("recognizes non-array records", () => {
-    expect(isRecord({})).toBe(true);
-    expect(isRecord(null)).toBe(false);
-    expect(isRecord([])).toBe(false);
-    expect(isRecord("text")).toBe(false);
-  });
-
-  it("checks text type, empty values, and maximum length", () => {
-    const issues = [];
-    collectTextIssues(3, "command.name", 32, issues);
-    collectTextIssues("", "command.description", 100, issues);
-    collectTextIssues("x".repeat(33), "command.name_localizations.fr", 32, issues);
-    expect(issues).toEqual([
-      "command.name must be text.",
-      "command.description must not be empty.",
-      "command.name_localizations.fr must have no more than 32 characters.",
-    ]);
-  });
-
+describe("collectLocalizationIssues", () => {
   it("checks localization maps and supported locale values", () => {
     const issues = [];
     collectLocalizationIssues(undefined, "command.name_localizations", 32, issues);

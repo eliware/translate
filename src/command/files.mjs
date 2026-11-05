@@ -1,28 +1,14 @@
 import { readCommandManifest } from "./manifest-reader.mjs";
+import { findDirectoryInputs } from "./files/directory.mjs";
+import { selectCommandFile } from "./files/selected.mjs";
 
 export async function findCommandFiles({ fsDep, pathDep, cwd, file }) {
   const files = [];
-  const invalidFiles = [];
-  let inputs;
-  let names;
-  if (file) {
-    const filePath = pathDep.resolve(cwd, file);
-    names = [file];
-    if (!file.toLowerCase().endsWith(".json")) {
-      return {
-        names,
-        files,
-        invalidFiles: [
-          { name: file, error: new Error("Command file must use the .json extension") },
-        ],
-      };
-    }
-    const name = file;
-    inputs = [{ name, filePath }];
-  } else {
-    names = (await fsDep.readdir(cwd)).filter((name) => name.endsWith(".json"));
-    inputs = names.map((name) => ({ name, filePath: pathDep.join(cwd, name) }));
-  }
+  const selection = file
+    ? selectCommandFile({ pathDep, cwd, file })
+    : await findDirectoryInputs({ fsDep, pathDep, cwd });
+  const { names, inputs } = selection;
+  const invalidFiles = [...(selection.invalidFiles ?? [])];
   for (const { name, filePath } of inputs) {
     const result = await readCommandManifest({ fsDep, name, filePath });
     if (result.file) files.push(result.file);

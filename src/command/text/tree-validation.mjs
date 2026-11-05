@@ -1,4 +1,6 @@
-import { collectLocalizationIssues, collectTextIssues, isRecord } from "./checks.mjs";
+import { isRecord } from "../record.mjs";
+import { collectLocalizationIssues } from "./localizations.mjs";
+import { collectTextIssues } from "./values.mjs";
 
 function collectCommandTextIssues(command, path, issues) {
   if (!isRecord(command)) return;
