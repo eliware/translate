@@ -12,7 +12,7 @@ export function mergeLocalizations(source, translated) {
   );
 }
 
-export function mergeCommand(source, translated) {
+export function mergeCommandFields(source, translated) {
   if (!isRecord(source)) return source;
   const output = { ...source };
   for (const key of ["name", "description"]) {
@@ -24,12 +24,6 @@ export function mergeCommand(source, translated) {
     if (isRecord(translated[key]) && !(key === "description_localizations" && source.type > 1)) {
       output[key] = mergeLocalizations(source[key], translated[key]);
     }
-  }
-  if (Array.isArray(source.options)) {
-    output.options = source.options.map((option, index) => {
-      const translatedOption = Array.isArray(translated.options) ? translated.options[index] : null;
-      return mergeCommand(option, isRecord(translatedOption) ? translatedOption : {});
-    });
   }
   return output;
 }

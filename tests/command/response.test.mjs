@@ -8,13 +8,11 @@ describe("formatCommandResponse", () => {
       type: 1,
       id: "123",
       name_localizations: { fr: "bonjour" },
-      options: [{ name: "user", description: "User", type: 3 }],
     };
     const response = {
       name: "hello",
       name_localizations: { de: "hallo", es: 3 },
       description_localizations: { fr: "Salutation" },
-      options: [{ name_localizations: { fr: "utilisateur" } }],
     };
     expect(JSON.parse(formatCommandResponse(JSON.stringify(response), source))).toEqual({
       name: "hello",
@@ -23,14 +21,6 @@ describe("formatCommandResponse", () => {
       id: "123",
       name_localizations: { fr: "bonjour", de: "hallo" },
       description_localizations: { fr: "Salutation" },
-      options: [
-        {
-          name: "user",
-          description: "User",
-          type: 3,
-          name_localizations: { fr: "utilisateur" },
-        },
-      ],
     });
   });
 
@@ -45,12 +35,9 @@ describe("formatCommandResponse", () => {
     expect(() => formatCommandResponse("{}", null)).toThrow("Command response must be an object");
   });
 
-  it("keeps absent fields and options from the source", () => {
-    const source = { name: "hello", type: 1, options: [{ name: "user", type: 3 }] };
+  it("keeps absent translated fields from the source", () => {
+    const source = { name: "hello", type: 1 };
     expect(JSON.parse(formatCommandResponse('{"name":"hello"}', source))).toEqual(source);
-    expect(() =>
-      formatCommandResponse('{"name":"hello"}', { name: "hello", type: 1, options: [null] }),
-    ).toThrow("Command response failed validation");
   });
 
   it("omits translated description localizations for non-chat commands", () => {

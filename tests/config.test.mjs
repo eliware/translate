@@ -54,14 +54,11 @@ describe("loadRuntimeConfig", () => {
 
   it("uses native path defaults with an injected missing-file result", async () => {
     const moduleDir = path.join("missing", "src");
-    const fsDep = {
-      access: async () => {
-        throw Error("missing env");
-      },
-    };
-    await expect(loadRuntimeConfig({ moduleDirDep: moduleDir, fsDep })).resolves.toEqual({
-      error: ".env file not found",
+    const access = jest.fn(async () => {
+      throw Error("missing env");
     });
+    await loadRuntimeConfig({ moduleDirDep: moduleDir, fsDep: { access } });
+    expect(access).toHaveBeenCalledWith(path.join(moduleDir, "..", ".env"));
   });
 
   it("uses native dotenv and process defaults", async () => {

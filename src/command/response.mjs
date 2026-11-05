@@ -1,4 +1,4 @@
-import { mergeCommand } from "./merge.mjs";
+import { mergeCommandOptions } from "./option-merge.mjs";
 import { isRecord } from "./text-validation.mjs";
 import { validateCommand } from "./validation.mjs";
 
@@ -11,7 +11,7 @@ export function formatCommandResponse(result, source) {
   }
   if (!isRecord(translated) || !isRecord(source))
     throw new TypeError("Command response must be an object");
-  const output = mergeCommand(source, translated);
+  const output = mergeCommandOptions(source, translated);
   const issues = validateCommand(output);
   if (issues.length > 0) {
     throw new TypeError(`Command response failed validation: ${issues.join(" ")}`);
