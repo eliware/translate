@@ -11,6 +11,7 @@
 ### Changed
 
 - Set the package version to `15.1.1` and refresh compatible dependency versions in the lock file.
+- Correct the package and README descriptions to capitalize Discord and describe both translation modes.
 - Limit command translation requests to five at a time.
 - Split CLI argument handling, command file handling, merging, and validation into focused modules.
 - Expand the user guide and clarify CLI setup, previews, validation, and file handling.
