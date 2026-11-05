@@ -169,6 +169,29 @@ describe("runCommandMode", () => {
     });
   });
 
+  it("limits concurrent command translations to five", async () => {
+    const names = Array.from({ length: 7 }, (_, index) => `command-${index}.json`);
+    const state = setup({ names });
+    for (const name of names) state.files.set(name, JSON.stringify({ name, type: 1 }));
+    let active = 0;
+    let maximumActive = 0;
+    let release;
+    const gate = new Promise((resolve) => {
+      release = resolve;
+    });
+    state.deps.translateLocaleDep = async () => {
+      active += 1;
+      maximumActive = Math.max(maximumActive, active);
+      if (active === 5) release();
+      await gate;
+      active -= 1;
+      return '{"name":"translated"}';
+    };
+    await expect(runCommandMode(state.deps)).resolves.toBe(0);
+    expect(maximumActive).toBe(5);
+    expect(state.writes).toHaveLength(7);
+  });
+
   it("reports malformed manifests and still translates valid manifests", async () => {
     const state = setup({ names: ["one.json", "bad.json"] });
     const debugMessages = [];

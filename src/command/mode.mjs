@@ -2,6 +2,9 @@ import { injectCommandJson, loadCommandPrompt } from "../prompts/command-prompt.
 import { findCommandFiles } from "./files.mjs";
 import { formatCommandResponse } from "./response.mjs";
 import { writeDebugError } from "../cli/error.mjs";
+import pLimit from "../p-limit.mjs";
+
+const MAX_CONCURRENT_TRANSLATIONS = 5;
 
 export async function runCommandMode({
   fsDep,
@@ -50,32 +53,35 @@ export async function runCommandMode({
     return 1;
   }
   let failed = invalidFiles.length > 0;
+  const limit = pLimit(MAX_CONCURRENT_TRANSLATIONS);
   await Promise.all(
-    files.map(async ({ name, filePath, raw }) => {
-      try {
-        const commandPrompt = JSON.parse(JSON.stringify(prompt));
-        if (!injectCommandJson(commandPrompt, raw)) {
-          failed = true;
-          writeError(`Could not inject command JSON into prompt for ${name}\n`);
-          return;
-        }
-        const result = await translateLocaleDep({ locale: "", promptObj: commandPrompt, apiKey });
-        let output;
+    files.map(({ name, filePath, raw }) =>
+      limit(async () => {
         try {
-          output = formatCommandResponse(result, JSON.parse(raw));
+          const commandPrompt = JSON.parse(JSON.stringify(prompt));
+          if (!injectCommandJson(commandPrompt, raw)) {
+            failed = true;
+            writeError(`Could not inject command JSON into prompt for ${name}\n`);
+            return;
+          }
+          const result = await translateLocaleDep({ locale: "", promptObj: commandPrompt, apiKey });
+          let output;
+          try {
+            output = formatCommandResponse(result, JSON.parse(raw));
+          } catch (error) {
+            failed = true;
+            writeError(`Invalid command response for command file ${name}\n`);
+            writeDebugError({ debug, writeDebug, context: name, error });
+            return;
+          }
+          await fsDep.writeFile(filePath, output, "utf8");
         } catch (error) {
           failed = true;
-          writeError(`Invalid command response for command file ${name}\n`);
+          writeError(`Failed to translate command file ${name}\n`);
           writeDebugError({ debug, writeDebug, context: name, error });
-          return;
         }
-        await fsDep.writeFile(filePath, output, "utf8");
-      } catch (error) {
-        failed = true;
-        writeError(`Failed to translate command file ${name}\n`);
-        writeDebugError({ debug, writeDebug, context: name, error });
-      }
-    }),
+      }),
+    ),
   );
   return failed ? 1 : 0;
 }
