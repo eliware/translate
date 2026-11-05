@@ -2,15 +2,24 @@
 
 ## 15.1.1 — 2026-11-05
 
+### Added
+
+- Check chat input command names and localized names against Discord naming rules.
+- Validate primary entry point commands and preserve valid description translations.
+- Report invalid command JSON files when the CLI scans a folder.
+
 ### Changed
 
-- Set the package version to `15.1.1`.
-- Update compatible transitive package versions in the lock file.
+- Set the package version to `15.1.1` and refresh compatible dependency versions in the lock file.
+- Limit command translation requests to five at a time.
+- Split CLI argument handling, command file handling, merging, and validation into focused modules.
+- Expand the user guide and clarify CLI setup, previews, validation, and file handling.
 
 ### Fixed
 
-- Make the missing configuration file test portable across Windows and Linux.
-- Isolate the test from checkout `.env` files and inherited API keys.
+- Keep description localizations on nested command options and primary entry point commands.
+- Make the missing configuration test portable across Windows and Linux.
+- Isolate configuration tests from checkout `.env` files and inherited API keys.
 
 ## 15.1.0 — 2026-11-02
 
