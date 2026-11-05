@@ -8,12 +8,6 @@ describe("validateCommandStructure", () => {
     ]);
   });
 
-  it("rejects descriptions and options on context commands", () => {
-    expect(validateCommandStructure({ name: "hello", type: 2, description: "Greeting" })).toEqual([
-      "command is a context command and cannot have descriptions or options.",
-    ]);
-  });
-
   it("requires an array for options and allows nested option groups", () => {
     expect(validateCommandStructure({ name: "hello", options: "invalid" })).toEqual([
       "command.options must be an array.",

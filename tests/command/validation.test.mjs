@@ -18,6 +18,19 @@ describe("validateCommand", () => {
     ).toContain("command is a context command and cannot have descriptions or options.");
   });
 
+  it("validates text in nested options through the combined validator", () => {
+    expect(
+      validateCommand({
+        name: "hello",
+        type: 1,
+        options: [{ name: "", name_localizations: { xx: "hola" } }],
+      }),
+    ).toEqual([
+      "command.options[0].name must not be empty.",
+      "command.options[0].name_localizations.xx uses an unsupported locale.",
+    ]);
+  });
+
   it("checks option arrays and nested option objects", () => {
     expect(validateCommand({ name: "hello", type: 1, options: "invalid" })).toContain(
       "command.options must be an array.",

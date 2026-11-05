@@ -1,4 +1,4 @@
-import { isCommandManifest } from "./manifest.mjs";
+import { readCommandManifest } from "./manifest-reader.mjs";
 
 export async function findCommandFiles({ fsDep, pathDep, cwd, file }) {
   const files = [];
@@ -24,18 +24,11 @@ export async function findCommandFiles({ fsDep, pathDep, cwd, file }) {
     inputs = names.map((name) => ({ name, filePath: pathDep.join(cwd, name) }));
   }
   for (const { name, filePath } of inputs) {
-    try {
-      const raw = await fsDep.readFile(filePath, "utf8");
-      const data = JSON.parse(raw);
-      if (isCommandManifest(data)) files.push({ name, filePath, raw });
-      else if (file)
-        invalidFiles.push({ name, error: new Error("Input is not a command manifest") });
-    } catch (error) {
-      invalidFiles.push({
-        name,
-        error: error instanceof SyntaxError ? new Error("File is not valid JSON") : error,
-      });
-    }
+    const result = await readCommandManifest({ fsDep, name, filePath });
+    if (result.file) files.push(result.file);
+    if (result.invalidFile) invalidFiles.push(result.invalidFile);
+    if (result.invalidManifest && file)
+      invalidFiles.push({ name, error: new Error("Input is not a command manifest") });
   }
   return { names, files, invalidFiles };
 }
