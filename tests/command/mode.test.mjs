@@ -109,7 +109,9 @@ describe("runCommandMode", () => {
     const selectedInvalid = setup();
     selectedInvalid.files.set("one.json", '{"name":"one"}');
     await expect(runCommandMode({ ...selectedInvalid.deps, file: "one.json" })).resolves.toBe(1);
-    expect(selectedInvalid.errors).toContain("Could not read or parse JSON file one.json\n");
+    expect(selectedInvalid.errors).toContain(
+      "Could not read, parse, or validate command JSON file one.json\n",
+    );
   });
 
   it("reports a missing or invalid command prompt", async () => {
@@ -199,7 +201,9 @@ describe("runCommandMode", () => {
     state.deps.writeDebug = (message) => debugMessages.push(message);
     await expect(runCommandMode(state.deps)).resolves.toBe(1);
     expect(state.writes).toHaveLength(1);
-    expect(state.errors).toContain("Could not read or parse JSON file bad.json\n");
+    expect(state.errors).toContain(
+      "Could not read, parse, or validate command JSON file bad.json\n",
+    );
     expect(debugMessages).toContain("Debug bad.json: File is not valid JSON\n");
   });
 

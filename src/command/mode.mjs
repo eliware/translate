@@ -33,7 +33,7 @@ export async function runCommandMode({
     return 1;
   }
   for (const { name, error } of invalidFiles) {
-    writeError(`Could not read or parse JSON file ${name}\n`);
+    writeError(`Could not read, parse, or validate command JSON file ${name}\n`);
     writeDebugError({ debug, writeDebug, context: name, error });
   }
   if (files.length === 0) {

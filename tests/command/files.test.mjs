@@ -25,6 +25,22 @@ describe("findCommandFiles", () => {
     expect(result.invalidFiles).toEqual([]);
   });
 
+  it("reports JSON files that are not command manifests", async () => {
+    const result = await findCommandFiles({
+      fsDep: {
+        readdir: async () => ["valid.json", "other.json"],
+        readFile: async (path) =>
+          path.endsWith("valid.json") ? '{"name":"hello","type":1}' : '{"settings":true}',
+      },
+      pathDep: { join: (...parts) => parts.join("/") },
+      cwd: "/target",
+    });
+    expect(result.files).toHaveLength(1);
+    expect(result.invalidFiles).toEqual([
+      { name: "other.json", error: new Error("Input is not a command manifest") },
+    ]);
+  });
+
   it("propagates directory errors", async () => {
     const fsDep = {
       readdir: async () => {
