@@ -2,7 +2,7 @@
 
 ## @eliware/translate [![npm](https://img.shields.io/npm/v/@eliware/translate)](https://www.npmjs.com/package/@eliware/translate) [![License](https://img.shields.io/github/license/eliware/translate)](https://github.com/eliware/translate/blob/main/LICENSE) [![CI](https://github.com/eliware/translate/actions/workflows/ci.yaml/badge.svg)](https://github.com/eliware/translate/actions/workflows/ci.yaml)
 
-A tool for translating locale files for discord apps built on @eliware/discord
+A CLI for translating locale files and Discord application command manifests with OpenAI.
 
 ## Table of Contents
 

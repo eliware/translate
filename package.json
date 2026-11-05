@@ -2,7 +2,7 @@
   "name": "@eliware/translate",
   "version": "15.1.1",
   "type": "module",
-  "description": "A tool for translating locale files for discord apps built on @eliware/discord",
+  "description": "A CLI for translating locale files and Discord application command manifests with OpenAI.",
   "keywords": [
     "translate",
     "translation",
