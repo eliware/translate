@@ -2,7 +2,7 @@ import { injectLocaleJson } from "../prompts/locale-prompt.mjs";
 import { setTargetLocale } from "../prompts/target-locale.mjs";
 import pLimit from "../p-limit.mjs";
 import { isLocaleResponse } from "./response.mjs";
-import { writeDebugError } from "../cli-error.mjs";
+import { writeDebugError } from "../cli/error.mjs";
 
 const MAX_CONCURRENT_TRANSLATIONS = 5;
 

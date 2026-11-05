@@ -1,7 +1,7 @@
 import { injectCommandJson, loadCommandPrompt } from "../prompts/command-prompt.mjs";
 import { findCommandFiles } from "./files.mjs";
 import { formatCommandResponse } from "./response.mjs";
-import { writeDebugError } from "../cli-error.mjs";
+import { writeDebugError } from "../cli/error.mjs";
 
 export async function runCommandMode({
   fsDep,

@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { createErrorWriter, writeDebugError } from "../src/cli-error.mjs";
+import { createErrorWriter, writeDebugError } from "../../src/cli/error.mjs";
 
 describe("createErrorWriter", () => {
   it("trims an error before it writes the error", () => {

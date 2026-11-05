@@ -7,7 +7,7 @@ import { createProgressBar } from "./progress.mjs";
 import { locales as supportedLocales } from "./locales.mjs";
 import { runLocaleMode } from "./locale/mode.mjs";
 import { runCommandMode } from "./command/mode.mjs";
-import { createErrorWriter } from "./cli-error.mjs";
+import { createErrorWriter } from "./cli/error.mjs";
 import { selectTranslationMode } from "./mode-selector.mjs";
 
 export async function runTranslate({
