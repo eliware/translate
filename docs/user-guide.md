@@ -101,7 +101,7 @@ npx translate --file lock.json --yes
 
 The file path can be relative to the current directory or absolute. The file must use the `.json` extension. It must contain a command manifest.
 
-The CLI checks command names and localized names for nonempty text and a maximum of 32 characters. It checks descriptions and localized descriptions for nonempty text and a maximum of 100 characters. Command localization keys can use any locale listed above or `en-US`. The CLI also checks command option objects and context command restrictions.
+The CLI checks command names and localized names for nonempty text and a maximum of 32 characters. It checks descriptions and localized descriptions for nonempty text and a maximum of 100 characters. Command localization keys can use any locale listed above or `en-US`. For chat input commands and options, the CLI checks Discord's allowed name characters and lowercase rule. User and message command names can include spaces and uppercase letters. The CLI also checks command option objects and context command restrictions.
 
 The CLI overwrites each valid manifest after a valid response. If one file fails, the CLI can continue with other files. It returns exit code `1` if any file fails. Save a copy of important files before a write run.
 

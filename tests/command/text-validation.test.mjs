@@ -12,4 +12,25 @@ describe("validateCommandText", () => {
       "command.options[0].name_localizations.xx uses an unsupported locale.",
     ]);
   });
+
+  it("checks chat input names and localized names against Discord rules", () => {
+    expect(
+      validateCommandText({
+        name: "Hello World",
+        type: 1,
+        name_localizations: { fr: "salut!" },
+        options: [{ name: "Good morning", type: 3 }],
+      }),
+    ).toEqual([
+      "command.name contains characters that Discord does not allow in chat input names.",
+      "command.name must use lowercase letters when lowercase forms exist.",
+      "command.name_localizations.fr contains characters that Discord does not allow in chat input names.",
+      "command.options[0].name contains characters that Discord does not allow in chat input names.",
+      "command.options[0].name must use lowercase letters when lowercase forms exist.",
+    ]);
+  });
+
+  it("allows spaces and uppercase letters in context command names", () => {
+    expect(validateCommandText({ name: "Kick Member", type: 2 })).toEqual([]);
+  });
 });
