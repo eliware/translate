@@ -2,6 +2,7 @@ import {
   collectLocalizationIssues,
   collectTextIssues,
   isRecord,
+  validateCommandText,
 } from "../../src/command/text-validation.mjs";
 
 describe("command text validation", () => {
@@ -46,6 +47,18 @@ describe("command text validation", () => {
       "command.name_localizations.de must not be empty.",
       "command.name_localizations.ja must be text.",
       "command.description_localizations.fr must have no more than 100 characters.",
+    ]);
+  });
+
+  it("checks text and localizations in nested command options", () => {
+    expect(
+      validateCommandText({
+        name: "hello",
+        options: [{ name: "", name_localizations: { xx: "hola" } }],
+      }),
+    ).toEqual([
+      "command.options[0].name must not be empty.",
+      "command.options[0].name_localizations.xx uses an unsupported locale.",
     ]);
   });
 });

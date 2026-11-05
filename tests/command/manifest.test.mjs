@@ -9,5 +9,6 @@ describe("isCommandManifest", () => {
     expect(isCommandManifest(null)).toBe(false);
     expect(isCommandManifest({ type: 1 })).toBe(false);
     expect(isCommandManifest({ name: "hello", type: "1" })).toBe(false);
+    expect(isCommandManifest({ name: "hello" })).toBe(false);
   });
 });

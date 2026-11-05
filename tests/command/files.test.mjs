@@ -77,14 +77,4 @@ describe("findCommandFiles", () => {
     });
     expect(result.invalidFiles[0].error.message).toBe("Command file must use the .json extension");
   });
-
-  it("rejects a selected JSON file that is not a command manifest", async () => {
-    const result = await findCommandFiles({
-      fsDep: { readFile: async () => '{"name":"hello"}' },
-      pathDep: { resolve: (base, file) => `${base}/${file}` },
-      cwd: "/target",
-      file: "one.json",
-    });
-    expect(result.invalidFiles[0].error.message).toBe("Input is not a command manifest");
-  });
 });

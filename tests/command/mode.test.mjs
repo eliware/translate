@@ -105,6 +105,11 @@ describe("runCommandMode", () => {
     const noManifest = setup({ names: ["bad.json"] });
     await expect(runCommandMode(noManifest.deps)).resolves.toBe(1);
     expect(noManifest.errors).toContain("No command JSON manifests detected in this directory\n");
+
+    const selectedInvalid = setup();
+    selectedInvalid.files.set("one.json", '{"name":"one"}');
+    await expect(runCommandMode({ ...selectedInvalid.deps, file: "one.json" })).resolves.toBe(1);
+    expect(selectedInvalid.errors).toContain("Could not read or parse JSON file one.json\n");
   });
 
   it("reports a missing or invalid command prompt", async () => {
