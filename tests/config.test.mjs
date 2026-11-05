@@ -1,3 +1,4 @@
+import path from "node:path";
 import { jest } from "@jest/globals";
 import { loadRuntimeConfig } from "../src/config.mjs";
 
@@ -51,10 +52,14 @@ describe("loadRuntimeConfig", () => {
     expect(deps.pathDep.dirname).toHaveBeenCalledWith(expect.stringMatching(/config\.mjs$/));
   });
 
-  it("uses native filesystem and path defaults", async () => {
-    await expect(
-      loadRuntimeConfig({ moduleDirDep: "C:\\path-that-does-not-exist\\src" }),
-    ).resolves.toEqual({
+  it("uses native path defaults with an injected missing-file result", async () => {
+    const moduleDir = path.join("missing", "src");
+    const fsDep = {
+      access: async () => {
+        throw Error("missing env");
+      },
+    };
+    await expect(loadRuntimeConfig({ moduleDirDep: moduleDir, fsDep })).resolves.toEqual({
       error: ".env file not found",
     });
   });
