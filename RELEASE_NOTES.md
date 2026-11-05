@@ -2,10 +2,15 @@
 
 ## 15.1.1 — 2026-11-05
 
+### Changed
+
+- Set the package version to `15.1.1`.
+- Update compatible transitive package versions in the lock file.
+
 ### Fixed
 
-- Test missing environment files with native path handling and an injected filesystem error.
-- Keep the configuration test isolated from checkout `.env` files and inherited API keys.
+- Make the missing configuration file test portable across Windows and Linux.
+- Isolate the test from checkout `.env` files and inherited API keys.
 
 ## 15.1.0 — 2026-11-02
 
@@ -44,4 +49,3 @@
 - Validate command names, descriptions, and localization keys against Discord limits and supported locales.
 - Report file read and write errors, then continue with other files.
 - Use ESM modules and focused helpers across the CLI.
-
